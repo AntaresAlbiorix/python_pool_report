@@ -12,7 +12,8 @@ select  --*
      , p.face_value 
      , round(p.face_value-q.nominal,2)  leftover                                               --остаток по текущему пулу  
      , case when q.is_coupon =1 then 0 
-                                else nvl(LAG(round(p.face_value_acc-q.nominal_acc,2)) OVER(partition by p.strategy_id order by p.hist_stage) ,0)
+                                else round(p.face_value_acc-p.face_value+q.nominal-q.nominal_acc,2)
+                           --   else nvl(LAG(round(p.face_value_acc-q.nominal_acc,2)) OVER(partition by p.strategy_id order by p.hist_stage) ,0)
        end       
               prev_pool                                                                       --хвост от предыдущего пула
      
@@ -166,7 +167,7 @@ join
 on  p.pool_id=q.pool_id
 
 where 1=1
---and q.pool_id=17
+and q.pool_id=17
 --and q.strategy_id=9 
 --and q.DATE_OPTION = to_date('26/09/2019', 'dd/mm/yyyy') 
 order by p.pool_id
