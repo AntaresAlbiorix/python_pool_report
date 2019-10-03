@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Остаток по пулу</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <style>
+        .container{
+            width:960px !important;
+            min-width:100%;
+            max-width:960px
+        }
+    </style>
+    
+</head> <q></q>
+<body>
+    <script>
+        $(document).ready(function(){
+           //$("#alert_a").show(); 
+            $("#button_sql_request").click(function(){
+                console.log('asdasdadasdasdasdasdasd')
+                var btn = $(this);
+                btn.button('loading');
+                //insert right element name here 
+                $.get("/get_pool_details", {pool_id: $("#pool_id").val()}, function( data ) {
+                    let formatted_json = '';
+                    let unformatted_json = {};
+                    data = data.replace(/'/g, '"')
+                    unformatted_json = JSON.parse(data);
+                    for (var key in unformatted_json) {
+                        if (key != "_id" ) {
+                            formatted_json += String(key) + ' : ' + String(unformatted_json[key]) + '\n'
+                            }
+                        }
+                    
+                    $("#message").html(formatted_json);
+                    btn.button('reset');
+                });
+            });
+        });
+    </script>
+    <div class=".container" >
+
+        <div class="row">
+            <div class="hidden-xs col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Обработка данных форм</h3>
+            </div>
+            <div class="panel-body">
+                <div class=".container-fluid">
+                    <div>
+                        <label for="name">Введите номер пула):</label></br> 
+                        <input type="text" id="pool_id" name="pool_id" placeholder="Введите номер пула"  /></br>
+                        <input type="text" id="calc_date" name="calc_date" placeholder="Введите дату расчета"  /></br>
+
+                    </div>
+                    <!-- КНОПОЧКА, КОТОРАЯ ХОДИТ В РУЧКУ /? , дальнейшая логика в <body><script> -->
+                    <button type="button" class="btn btn-primary" data-loading-text="Загружается" id="button_sql_request">Выгрузить данные</button></br>
+                </div>
+                <p> </p>
+               <!-- <div id="alert_a" class="alert alert-success" role="alert" > -->
+
+                <pre><div id ="message"></div></pre>
+
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+</div>
+</body>
+</html>
