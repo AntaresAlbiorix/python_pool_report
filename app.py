@@ -19,27 +19,32 @@ c = conn.cursor()
 
 @app.route("/get_pool_details")
 def get_pool_details():
-  pool_id = request.args.get('pool_id')
+  pool_id   = request.args.get('pool_id')
   calc_date = request.args.get('calc_date')
   sql_query = """
-	select 5*5 bI, sysdate werw
+	select {pool_id}   *2 	bI
+		,  {calc_date} *5 	werw
 	from dual
 	"""
-  c.execute(sql_query)
+  valid_sql_query = sql_query.format(
+    pool_id   = pool_id,
+    calc_date = calc_date
+    )
+  print (valid_sql_query)
+  #отправляем SQL запрос
+  c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   header_list = [] #list of objects of any type
   for i in c.description:
-      header_list.append(i[0])
+	  header_list.append(i[0])
   rows = [[],[]]   #may contain of lists as well (apparently)  
   header_list = tuple(header_list) #unchangeable list
-  rows = [row for row in c] #list
-  #header_list = ["ИД Пула", "Остаток", "Дата","Комментарий"]
-  #rows = [['5','55545','segodnya','bI']]
-  
+  rows = [row for row in c] #list  
+ 
   response_dict = {'header_list' : header_list, 'rows': rows}
-  print (header_list)
+  
   return json.dumps(response_dict) 
-
+  
 @app.route("/")
 def root():
   return render_template('index.html')

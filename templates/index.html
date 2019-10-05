@@ -29,7 +29,7 @@
                 var btn = $(this);
                 btn.button('loading');
                 //insert right element name here 
-                $.get("/get_pool_details", {pool_id: $("#pool_id").val()}, function( data ) {
+                $.get("/get_pool_details", {pool_id: $("#pool_id").val(), calc_date: $("#calc_date").val()}, function( data ) {
                     let formatted_json = '';
                     let unformatted_json = {};
                     data = data.replace(/'/g, '"')
