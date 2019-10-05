@@ -10,7 +10,7 @@ config.read('snake.ini')
 oracle_login = config['DEFAULT']['login']
 oracle_password = config['DEFAULT']['password']
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 #создаем соединение
 dsn_tns = cx_Oracle.makedsn('172.20.0.202', '1521', service_name='mlife1')
@@ -19,16 +19,19 @@ c = conn.cursor()
 
 @app.route("/get_pool_details")
 def get_pool_details():
-  pool_id   = request.args.get('pool_id')
-  calc_date = request.args.get('calc_date')
+  print('ya tut')
+  strat   = request.args.get('strat')
+  optdate = request.args.get('optdate')
+  print (strat)
+  print (optdate)
   sql_query = """
-	select {pool_id}   *2 	bI
-		,  {calc_date} *5 	werw
+	select {strat}    	bI
+		,  to_date('{optdate}', 'dd/mm/yyyy')   	werw
 	from dual
 	"""
   valid_sql_query = sql_query.format(
-    pool_id   = pool_id,
-    calc_date = calc_date
+    strat   = strat,
+    optdate = optdate
     )
   print (valid_sql_query)
   #отправляем SQL запрос
@@ -43,7 +46,7 @@ def get_pool_details():
  
   response_dict = {'header_list' : header_list, 'rows': rows}
   
-  return json.dumps(response_dict) 
+  return json.dumps(response_dict, default=str) 
   
 @app.route("/")
 def root():
