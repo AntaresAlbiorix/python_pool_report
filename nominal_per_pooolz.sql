@@ -3,32 +3,32 @@
 -------------добавить скидку на cool-off (в текущей версии для сверки с Excel необходимо сперва занулить ее на листе contents коэфом)-----------------------
 
 select  --*
-       q.pool_id
-     , q.program_market   
-     , q.date_option                                                                       
-     , q.rate
-     , round(q.AVG_KU,6)*100   AVG_KU
-     , q.nominal
-     , p.face_value 
-     , round(p.face_value-q.nominal,2)  leftover                                               --остаток по текущему пулу  
-     , case when q.is_coupon =1 then 0 
+       q.pool_id 									"Номер пула"
+     , q.program_market 							"Стратегия"   
+     , q.date_option   								"Дата инвестирования"                                                                     
+     , q.rate										"Курс USD"
+     , round(q.AVG_KU,6)*100    	 				"Средний КУ"
+     , q.nominal									"Номинал по договорам"
+     , p.face_value 								"Купленный номинал"
+     , round(p.face_value-q.nominal,2)  		    "Остаток от текущ. пула"                                            --остаток по текущему пулу  
+     , case when q.is_coupon =1 then 0 				 
                                 else round(p.face_value_acc-p.face_value+q.nominal-q.nominal_acc,2)
                            --   else nvl(LAG(round(p.face_value_acc-q.nominal_acc,2)) OVER(partition by p.strategy_id order by p.hist_stage) ,0)
        end       
-              prev_pool                                                                       --хвост от предыдущего пула
+													"Хвост"                              					            --хвост от предыдущего пула
      
      , round(  case when q.is_coupon =1 then (p.face_value-q.nominal)
                                         else (p.face_value_acc-q.nominal_acc)
                 end                                  
          ,2)    
-              total_leftover                                                                  --остаток номинала с учетом хвоста
+													"Итого остаток"                    							--остаток номинала с учетом хвоста
      
      , round(  case when q.is_coupon =1 then (p.face_value-q.nominal)
                                         else (p.face_value_acc-q.nominal_acc)
                 end                                  
               /  q.avg_ku*q.rate 
          ,2)    
-               LEFT_PREM                                                                      -- лимит продаж (руб)
+													"Лимит продаж"                       							-- лимит продаж (руб)
 
 from
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -167,8 +167,7 @@ join
 on  p.pool_id=q.pool_id
 
 where 1=1
-and q.pool_id=17
---and q.strategy_id=9 
---and q.DATE_OPTION = to_date('26/09/2019', 'dd/mm/yyyy') 
+--and q.pool_id=17
+and q.strategy_id in ({strat} )
+and q.DATE_OPTION in ({optdate}) 
 order by p.pool_id
-;

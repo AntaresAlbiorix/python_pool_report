@@ -28,10 +28,10 @@
 	<form class="form" name="myform">	
 	<div id="header"> 
 		<h2 style=" display:inline-block; float:left;  margin: 0px; margin-left: 15px; margin-top: 5px; padding: 0px; valign:middle;"> 
-		Денежные потоки по страховому портфелю
+		Инвестиции РФ_ГФ New Age
 		</h2>
 		<button id="submit_button" data-loading-text="Падажжи" type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Отправить</button>
-		<button type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')"> Export to Excel</button>
+		<input type="button" style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')" value="Export to Excel">
 	</div>  
 	
 	<div id="container">
@@ -54,18 +54,20 @@
 						return nvl;
 						}
 					else {
-						return element_value_array.join('|')
+						return element_value_array.join(',')
 					};
 				};
 							
 				var strat=implode_array('strat[]',0);
 				
-				var optdate=Array.from(document.getElementsByName('optdate[]')).filter(element => element.checked == true);
-				if (optdate.length === document.getElementsByName('optdate[]').length) {
-					optdate="all"}
-				else{
-					optdate=implode_array('optdate[]',0);
-				};
+				//var optdate=Array.from(document.getElementsByName('optdate[]')).filter(element => element.checked == true);
+				//if (optdate.length === document.getElementsByName('optdate[]').length) {
+				//	  optdate="all"}
+				//else{
+				var optdate=implode_array('optdate[]',0);
+					optdate=optdate.split(',');
+					optdate="to_date('"+optdate.join("', 'dd.mm.yyyy'), to_date('")+"', 'dd.mm.yyyy')";
+				//};
 				
 				//собираем переменные и идем в ручку 
                 $.get("/get_pool_details", {strat: strat, optdate: optdate}, function( result_table ) { 
@@ -74,8 +76,7 @@
                 });
             });
         });
-					 
-//					 document.write(document.getElementsByName('UWdate[]').length)						
+				
 //					 document.write(document.getElementsByName('optdate[]').length)				
 //					 $jigurda="\"".$field."\" \"".$sc."\" \"".$nst."\" \"".$status."\" \"".$bsns_type."\" \"".$strat."\" \"".$optdate."\" \"".$UWdate."\" \"".$planfact."\"" . " \"".$curr."\"";					 
 		</script>
@@ -97,10 +98,8 @@
 						<input type="checkbox"   name="strat[]"  value="10" checked >Сбалансированный портфель 5 лет     <Br/>
 
 				</div>
-			</div>
-			<div id="center2" class="column">
-				<!--<h2>meow</h2>-->
-							
+			
+										
 				<div id="upcenter" 		class="row">  
 					<h4  style="padding: 0px; margin:0px;margin-bottom:5px;">Даты инвестирования:</h4>
 						
@@ -133,7 +132,13 @@
 						<input type="checkbox"  name="optdate[]"   value = "29.07.2019"	checked >	29.07.2019  <Br/>
 						<input type="checkbox"  name="optdate[]"   value = "26.09.2019"	checked >	26.09.2019  <Br/>
 				</div>
-				<!-- 
+	
+			
+			
+			</div>
+			<div id="center2" class="column">
+				<!--<h2>meow</h2>-->
+			<!-- 
 				<div id="downcenter" 	class="row">  															
 				</div>-->	
 			</div>
@@ -229,7 +234,28 @@ else{
  }
 </script>
 
-
+<script type="text/javascript">
+    
+	var dt = new Date();
+        var day = dt.getDate();
+        var month = dt.getMonth() + 1;
+        var year = dt.getFullYear();
+        var hour = dt.getHours();
+        var mins = dt.getMinutes();
+        var postfix = day + "." + month + "." + year + "_" + hour + "." + mins;
+	
+	var tableToExcel = (function() {
+          var uri = 'data:application/vnd.ms-excel;base64,'
+            , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+            , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+            , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+          return function(table, name) {
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = {worksheet: 'Worksheet', table: table.innerHTML.replace(/-/g, "0" ).replace(/,/g, "" ).replace(/\u0028/g, "-" ).replace(/\u0029/g, "" )}
+            window.location.href = uri + base64(format(template, ctx))
+          }
+        })()
+</script> 
 
 <script>		
 //бегущая строка
