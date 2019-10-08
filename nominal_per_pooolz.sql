@@ -5,10 +5,10 @@
 select  --*
        q.pool_id 									"Номер пула"
      , q.program_market 							"Стратегия"   
-     , q.date_option   								"Дата инвестирования"                                                                     
+     , to_char(q.date_option)   								"Дата инвестирования"                                                                     
      , q.rate										"Курс USD"
      , round(q.AVG_KU,6)*100    	 				"Средний КУ"
-     , q.nominal									"Номинал по договорам"
+     , round(q.nominal,2)									"Номинал по договорам"
      , p.face_value 								"Купленный номинал"
      , round(p.face_value-q.nominal,2)  		    "Остаток от текущ. пула"                                            --остаток по текущему пулу  
      , case when q.is_coupon =1 then 0 				 

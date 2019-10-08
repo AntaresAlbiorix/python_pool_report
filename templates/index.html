@@ -31,13 +31,42 @@
 		Инвестиции РФ_ГФ New Age
 		</h2>
 		<button id="submit_button" data-loading-text="Падажжи" type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Отправить</button>
+		<button id="getlist_button" data-loading-text="Падажжи" type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Подгрузить даты</button>
 		<input type="button" style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')" value="Export to Excel">
 	</div>  
 	
 	<div id="container">
 		<script>
 		   $(document).ready(function(){
-            $("#submit_button").click(function(){
+            $("#getlist_button").click(function(){
+                var btn = $(this);
+                btn.button('loading');
+				function implode_array(element_name, nvl='None')
+				{
+					var element_array = Array.from(document.getElementsByName(element_name));
+					console.log(element_array.length)
+					var element_value_array = [];
+					
+					element_value_array = element_array.filter(element => element.checked == true);
+					element_value_array = element_value_array.map(element => element.value); 
+					
+					if (element_value_array.length===0) { 
+						return nvl;
+						}
+					else {
+						return element_value_array.join(',')
+					};
+				};
+							
+				var strat=implode_array('strat[]',0);
+				//собираем переменные и идем в ручку 
+                $.get("/get_pool_list",{strat: strat},  function( pool_list ) { 
+                    $("#upcenter").html(pool_list); //div id куда должен встать результат из ручки
+                    btn.button('reset');
+                });
+            });
+			
+			$("#submit_button").click(function(){
                 var btn = $(this);
                 btn.button('loading');
 				//делаем строку из отмеченных чекбоксов
@@ -75,11 +104,10 @@
                     btn.button('reset');
                 });
             });
-        });
-				
-//					 document.write(document.getElementsByName('optdate[]').length)				
-//					 $jigurda="\"".$field."\" \"".$sc."\" \"".$nst."\" \"".$status."\" \"".$bsns_type."\" \"".$strat."\" \"".$optdate."\" \"".$UWdate."\" \"".$planfact."\"" . " \"".$curr."\"";					 
+        });					 
 		</script>
+		
+		
 			<div id="center1" class="column">
 				<div id="upleft" 		class="row"> 	
 					
