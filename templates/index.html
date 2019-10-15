@@ -30,8 +30,9 @@
 		<h2 style=" display:inline-block; float:left;  margin: 0px; margin-left: 15px; margin-top: 5px; padding: 0px; valign:middle;"> 
 		Инвестиции РФ_ГФ New Age
 		</h2>
+		<button id="back_to_default_button" 				   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:200px;  height: 30px;">Вернуться к актуальным пулам</button>				
 		<button id="submit_button" data-loading-text="Падажжи" type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Отправить</button>
-		<input type="button" style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')" value="Export to Excel">
+		<input 												   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')" value="Export to Excel">
 	</div>  
 	
 	<div id="container">
@@ -57,9 +58,16 @@
 //------------------------------------------------------------------------------------------------------------------------------
 
 //вывести дефолтный список пулов
+			//при загрузке страницы
 			$.get("/apriori",  function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
                 });		
+			//по кнопке
+			$("#back_to_default_button").click(function(){	
+                $.get("/apriori",  function(apriori) { 
+                    $("#center3").html(apriori); //div id куда должен встать результат из ручки
+                });	
+            });			
 
 //подтянуть даты инвестирования в зависимости от выбранных стратегий	
 			$("#getlist_button").click(function(){							
@@ -82,6 +90,7 @@
 				//собираем переменные и идем в ручку 
                 $.get("/get_selected_pools", {strat: strat, optdate: optdate}, function( result_table ) { 
                     $("#center3").html(result_table); //div id куда должен встать результат из ручки 
+					btn.button('reset');
                 });
             });
         });					 
