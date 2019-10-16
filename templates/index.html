@@ -32,6 +32,8 @@
 		</h2>
 		<button id="back_to_default_button" 				   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:200px;  height: 30px;">Вернуться к актуальным пулам</button>				
 		<button id="submit_button" data-loading-text="Падажжи" type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Отправить</button>
+		<input type="radio" name="mode" value="table" checked> Таблица </input>
+		<input type="radio" name="mode" value="details"> Подробно</input>
 		<input 												   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')" value="Export to Excel">
 	</div>  
 	
@@ -59,12 +61,14 @@
 
 //вывести дефолтный список пулов
 			//при загрузке страницы
-			$.get("/apriori",  function(apriori) { 
+			var mode=implode_array('mode',0);
+			$.get("/apriori", {mode:mode},  function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
                 });		
 			//по кнопке
 			$("#back_to_default_button").click(function(){	
-                $.get("/apriori",  function(apriori) { 
+				var mode=implode_array('mode',0);
+                $.get("/apriori", {mode:mode}, function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
                 });	
             });			
@@ -74,11 +78,11 @@
 				var strat=implode_array('strat[]',0);
 				//собираем переменные и идем в ручку 
                 $.get("/get_pool_list",{strat: strat},  function( pool_list ) { 
-                    $("#upcenter").html(pool_list); //div id куда должен встать результат из ручки
+                    $("#upcenter1").html(pool_list); //div id куда должен встать результат из ручки
                 });
             });
 			
-//выгрузка остатков по пулам			
+//выгрузка остатков по пулам в виде таблицы			
 			$("#submit_button").click(function(){
                 var btn = $(this);
                 btn.button('loading');
@@ -87,8 +91,9 @@
 				var optdate=implode_array('optdate[]',0);
 					optdate=optdate.split(',');
 					optdate="to_date('"+optdate.join("', 'dd.mm.yyyy'), to_date('")+"', 'dd.mm.yyyy')";
+				var mode=implode_array('mode',0);
 				//собираем переменные и идем в ручку 
-                $.get("/get_selected_pools", {strat: strat, optdate: optdate}, function( result_table ) { 
+                $.get("/get_selected_pools", {strat: strat, optdate: optdate, mode:mode}, function( result_table ) { 
                     $("#center3").html(result_table); //div id куда должен встать результат из ручки 
 					btn.button('reset');
                 });
@@ -112,42 +117,15 @@
 						<input type="checkbox"   name="strat[]"  value="8"  checked >Купонный доход - 2                  <Br/>
 						<input type="checkbox"   name="strat[]"  value="9"  checked >Сбалансированный портфель 3 года    <Br/>
 						<input type="checkbox"   name="strat[]"  value="10" checked >Сбалансированный портфель 5 лет     <Br/>
-					
-					<button id="getlist_button" type="button"  style=" display:inline-block; float:left; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Подгрузить даты</button>	
-				</div>
+						
+						</div>
 			
 										
 				<div id="upcenter" 		class="row">  
-					<h4  style="padding: 0px; margin:0px;margin-bottom:5px;">Даты инвестирования:</h4>
-						
-						<input type="button" name="Check_All_opts" value="Снять все" class="chkbtn"	onClick="master_check('optdate[]')" id = "optdate[]"> </br>
-						<input type="checkbox"  name="optdate[]"   value = "21.04.2017"	checked >	21.04.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "21.07.2017"	checked >	21.07.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "28.09.2017"	checked >	28.09.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "27.10.2017"	checked >	27.10.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "13.11.2017"	checked >	13.11.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "06.12.2017"	checked >	06.12.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "10.11.2017"	checked >	10.11.2017  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "15.01.2018"	checked >	15.01.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "16.02.2018"	checked >	16.02.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "28.02.2018"	checked >	28.02.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "02.04.2018"	checked >	02.04.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "01.06.2018"	checked >	01.06.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "29.05.2018"	checked >	29.05.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "02.07.2018"	checked >	02.07.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "02.08.2018"	checked >	02.08.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "11.09.2018"	checked >	11.09.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "01.10.2018"	checked >	01.10.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "09.11.2018"	checked >	09.11.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "19.11.2018"	checked >	19.11.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "11.12.2018"	checked >	11.12.2018  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "18.01.2019"	checked >	18.01.2019  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "22.02.2019"	checked >	22.02.2019  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "29.03.2019"	checked >	29.03.2019  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "25.04.2019"	checked >	25.04.2019  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "28.05.2019"	checked >	28.05.2019  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "29.07.2019"	checked >	29.07.2019  <Br/>
-						<input type="checkbox"  name="optdate[]"   value = "26.09.2019"	checked >	26.09.2019  <Br/>
+					<button id="getlist_button" type="button"  style=" display:inline-block; float:left; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Подгрузить даты</button><Br/>	
+				</div>
+				<div id="upcenter1" class="row"> 
+
 				</div>
 	
 			

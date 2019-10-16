@@ -13,7 +13,7 @@
     			padding-left: 0px;      /* LC width */
 				padding-right: 0px;     /* RC width */
 				/*background-color: #ddd4e3; */
-				height: calc(100% - 60px); 		
+				height: calc(100% - 60px);				
     		}
     				
 	.form{
@@ -35,13 +35,14 @@
     			position: relative;
 				float: left;
     			height: 100%;
-    			overflow: auto;
+    			 /*border:0.2px solid #4f7696; */
+				overflow: auto;
 				white-space: nowrap;
     		}
 	
 	#container .row{
     			text-align:left;
-    			border:0.2px solid #4f7696;
+    			             
 				border-collapse:collapse;
 				padding:10px;
 				overflow:auto;
