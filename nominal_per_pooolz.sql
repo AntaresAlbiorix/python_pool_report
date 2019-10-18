@@ -3,32 +3,34 @@
 -------------добавить скидку на cool-off (в текущей версии для сверки с Excel необходимо сперва занулить ее на листе contents коэфом)-----------------------
 
 select  --*
-       q.pool_id 									"Номер пула"
-     , q.program_market 							"Стратегия"   
+       q.pool_id 												"Номер пула"
+     , q.program_market 										"Стратегия"   
      , to_char(q.date_option)   								"Дата инвестирования"                                                                     
-     , q.rate										"Курс USD"
-     , round(q.AVG_KU,6)*100    	 				"Средний КУ"
-     , round(q.nominal,2)									"Номинал по договорам"
-     , p.face_value 								"Купленный номинал"
-     , round(p.face_value-q.nominal,2)  		    "Остаток от текущ. пула"                                            --остаток по текущему пулу  
-     , case when q.is_coupon =1 then 0 				 
-                                else round(p.face_value_acc-p.face_value+q.nominal-q.nominal_acc,2)
-                           --   else nvl(LAG(round(p.face_value_acc-q.nominal_acc,2)) OVER(partition by p.strategy_id order by p.hist_stage) ,0)
-       end       
-													"Хвост"                              					            --хвост от предыдущего пула
+     , q.rate													"Курс USD"
+     , round(q.AVG_KU,6)*100    	 							"Средний КУ"
+     , to_char(q.premia_rur, '999,999,990.99')                  "Премия по договорам"
+	 , to_char(q.nominal, '999,999,990.99')						"Номинал по договорам"
+     , to_char(p.face_value , '999,999,990.99')					"Купленный номинал"
+     , to_char(p.face_value-q.nominal, '999,999,990.99')  		"Остаток от текущ. пула"                                        --остаток по текущему пулу  
+     , to_char(
+			   case when q.is_coupon =1 then 0 				 
+										else round(p.face_value_acc-p.face_value+q.nominal-q.nominal_acc,2)
+								   --   else nvl(LAG(round(p.face_value_acc-q.nominal_acc,2)) OVER(partition by p.strategy_id order by p.hist_stage) ,0)
+			   end       
+		, '999,999,990.99')										"Хвост"                              					      	--хвост от предыдущего пула
      
-     , round(  case when q.is_coupon =1 then (p.face_value-q.nominal)
-                                        else (p.face_value_acc-q.nominal_acc)
-                end                                  
-         ,2)    
-													"Итого остаток"                    							--остаток номинала с учетом хвоста
+     , to_char(
+				case when q.is_coupon =1 then (p.face_value-q.nominal)
+												else (p.face_value_acc-q.nominal_acc)
+				end                                    
+		, '999,999,990.99')										"Итого остаток"                    								--остаток номинала с учетом хвоста
      
-     , round(  case when q.is_coupon =1 then (p.face_value-q.nominal)
+     , to_char(  case when q.is_coupon =1 then (p.face_value-q.nominal)
                                         else (p.face_value_acc-q.nominal_acc)
                 end                                  
               /  q.avg_ku*q.rate 
-         ,2)    
-													"Лимит продаж"                       							-- лимит продаж (руб)
+        , '999,999,990.99')	  
+																"Лимит продаж"                       							-- лимит продаж (руб)
 
 from
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -49,7 +51,7 @@ from
                    ,  MAX(dog.RATE)  over (partition by dog.pool_id ) rate                   
                    
                    ,  1/sum(avg_ku) over (partition by dog.pool_id ) AVG_KU --средневзвешенный КУ по pool_id
-                   
+                   ,  sum(dog.premia_rur) over (partition by dog.pool_id ) premia_rur
                    ,  sum(dog.nominal) over (partition by dog.pool_id ) NOMINAL --израсходованный номинал по пулу
                    ,  sum(dog.nominal) over (partition by dog.strategy_id order by  dog.hist_stage range UNBOUNDED PRECEDING) NOMINAL_acc --израсходованный номинал по пулу накопленным итогом 
                      
@@ -67,6 +69,7 @@ from
                        , d.date_option
                        , d.program_market
                        , R.RATE
+					   , d.premia_rur
                                     
                       , -- Вклад каждого полиса в ( 1 / [средневзвешенный КУ]). Сумма этих показателей по пулу дает 1 / [средневзвешенный КУ] по пулу
                         -- Тоже самое, что Вклад каждого полиса в [средневзвешенный КУ]

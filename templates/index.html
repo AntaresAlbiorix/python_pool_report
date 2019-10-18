@@ -30,7 +30,7 @@
 		<h2 style=" display:inline-block; float:left;  margin: 0px; margin-left: 15px; margin-top: 5px; padding: 0px; valign:middle;"> 
 		Инвестиции РФ_ГФ New Age
 		</h2>
-		<button id="back_to_default_button" 				   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:200px;  height: 30px;">Вернуться к актуальным пулам</button>				
+		<button id="back_to_default_button" 				   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:200px;  height: 30px;">Выгрузить актуальные пулы</button>				
 		<button id="submit_button" data-loading-text="Падажжи" type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;">Отправить</button>
 		<input type="radio" name="mode" value="table" checked> Таблица </input>
 		<input type="radio" name="mode" value="details"> Подробно</input>
@@ -61,6 +61,11 @@
 
 //вывести дефолтный список пулов
 			//при загрузке страницы
+			var strat=implode_array('strat[]',0);
+				//собираем переменные и идем в ручку 
+            $.get("/get_pool_list",{strat: strat},  function( pool_list ) { 
+                    $("#upcenter1").html(pool_list); //div id куда должен встать результат из ручки
+            });
 			var mode=implode_array('mode',0);
 			$.get("/apriori", {mode:mode},  function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
@@ -71,7 +76,8 @@
                 $.get("/apriori", {mode:mode}, function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
                 });	
-            });			
+            });		
+		
 
 //подтянуть даты инвестирования в зависимости от выбранных стратегий	
 			$("#getlist_button").click(function(){							

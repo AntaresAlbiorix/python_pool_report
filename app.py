@@ -67,6 +67,7 @@ def get_pool_details(strat,optdate):
     )
   #print (valid_sql_query)
   #отправляем SQL запрос
+  print (valid_sql_query)
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   f = fields(c)
@@ -79,11 +80,19 @@ def get_pool_details(strat,optdate):
   rows = [row for row in c] #list  
   #идем собирать карточку из списков
   for i in range(len(rows)):
-    s = s + '<h2>Карточка пула № ' + str(rows[i][0]) + '</h2><p/>'
-    s = s + 'Стратегия'  + str(rows[i][2]) + '<p/>'
-    s = s + 'Средний КУ' + str(rows[i][3]) + '<p/>'
-    s = s + 'дата пула'  + str(rows[i][4]) + '<p/>'
-    s = s + 'дата пула'  + str(rows[i][5]) + '<p/>'
+    s = s + '<h2>Карточка пула № ' + str(rows[i][f['Номер пула']]) + '</h2><p/>'
+    s = s + 'Стратегия: '  + str(rows[i][f['Стратегия']]) + '<p/>'
+    s = s + 'Дата инвестирования: '  + str(rows[i][f['Дата инвестирования']]) + '<p/>'
+    s = s + 'Средний КУ: ' + str(rows[i][f['Средний КУ']]) + '<p/>' 
+    s = s + 'Курс USD: '  + str(rows[i][f['Курс USD']]) + '<p/>'
+    s = s + 'Брутто премия по договорам: '  + str(rows[i][f['Премия по договорам']]) + '<p/>'
+    s = s + 'Номинал по договорам: '  + str(rows[i][f['Номинал по договорам']]) + '<p/>'
+    s = s + 'Остаток от текущ. пула: '  + str(rows[i][f['Остаток от текущ. пула']]) + '<p/>'
+    s = s + 'Хвост от предыдущего пула: '  + str(rows[i][f['Хвост']]) + '<p/>'
+    s = s + 'Итого остаток номинала: '  + str(rows[i][f['Итого остаток']]) + '<p/>'
+    s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'
+	
+	
   return s
 
 
