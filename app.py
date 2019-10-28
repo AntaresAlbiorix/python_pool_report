@@ -15,7 +15,7 @@ oracle_password = config['DEFAULT']['password']
 app = Flask(__name__, static_url_path='/static')
 
 #создаем соединение
-dsn_tns = cx_Oracle.makedsn('172.20.0.202', '1521', service_name='mlife1')
+dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
 conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
 c = conn.cursor()
 
@@ -39,7 +39,7 @@ def get_pool_table(strat,optdate):
     strat   = strat,
     optdate = optdate
     )
-  #print (valid_sql_query)
+  print (valid_sql_query)
   #отправляем SQL запрос
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
