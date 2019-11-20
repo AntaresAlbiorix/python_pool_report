@@ -15,7 +15,7 @@ oracle_password = config['DEFAULT']['password']
 app = Flask(__name__, static_url_path='/static')
 
 #создаем соединение
-dsn_tns = cx_Oracle.makedsn('172.20.0.202', '1521', service_name='mlife1')
+dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
 conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
 c = conn.cursor()
 
@@ -108,4 +108,4 @@ def root():
   return render_template('index.html')
 
 if __name__ == '__main__':
-  app.run(host="::", port=82, debug = True)
+  app.run(host="0.0.0.0", port=82, debug = True)
