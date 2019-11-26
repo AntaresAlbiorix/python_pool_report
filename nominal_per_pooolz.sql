@@ -4,7 +4,7 @@
 
 select  --*
        q.pool_id 												"Номер пула"
-     , q.program_market 										"Стратегия"   
+     , q.strategy_name   										"Стратегия"   
      , to_char(q.date_option)   								"Дата инвестирования"                                                                     
      , q.rate													"Курс USD"
      , round(q.AVG_KU,6)*100    	 							"Средний КУ"
@@ -41,7 +41,7 @@ from
            -- ! Поменять distinct на group by
            distinct  
                   dog.pool_id
-               ,  dog.program_market  -- маркетинговое название стратегии
+               ,  dog.strategy_name  -- маркетинговое название стратегии
                ,  dog.date_option
                ,  dog.strategy_id
                ,  dog.hist_stage
@@ -66,8 +66,8 @@ from
                        , p.strategy_id
                        , p.hist_stage
                        , p.coupon as is_coupon
+					   , p.strategy_name
                        , d.date_option
-                       , d.program_market
                        , R.RATE
 					   , d.premia_rur
                                     
@@ -124,6 +124,7 @@ from
                                , p.strategy_id
                                , p.hist_stage
                                , sr.coupon
+							   , sr.strategy_name
                                , case when sr.coupon=1 then nvl( l.coupon_rate,  LAG (l.coupon_rate) OVER (partition by p.strategy_id order by p.hist_stage))
                                     else -1
                                  end as coupon_rate
