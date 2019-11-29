@@ -17,7 +17,7 @@ app = Flask(__name__, static_url_path='/static')
 #создаем соединение
 dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
 conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-c = conn.cursor()
+#c = conn.cursor()
 
 def get_pool_details(strat,optdate):
   fd = open('nominal_per_pooolz.sql', 'r')
@@ -29,6 +29,7 @@ def get_pool_details(strat,optdate):
     )
   print (valid_sql_query)
   #отправляем SQL запрос
+  c = conn.cursor()
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   s = '<table id="tab_result"><tr class="Heads">'  
@@ -42,6 +43,7 @@ def get_pool_details(strat,optdate):
   s = s + '</tr>' 
   s = s + '</table>' 
   print('start'+s+'end')
+  c.close()
   return s 
 
 @app.route("/apriori")
@@ -51,6 +53,7 @@ def apriori():
   fd.close()
   valid_sql_query = sql_query
   #отправляем SQL запрос
+  c = conn.cursor()
   c.execute(valid_sql_query) 
   #функция для привязки названий столбцов к их индексам 
   def fields(cursor):
@@ -72,6 +75,7 @@ def apriori():
     optdate_list.append(row[f['DATE_OPT']]) 
   strat=','.join(strat_list)
   optdate="to_date('"+"', 'dd.mm.yyyy'), to_date('".join(optdate_list)+"', 'dd.mm.yyyy')"; 
+  c.close()
   return get_pool_details(strat, optdate)
  
 @app.route("/get_pool_list")
@@ -84,6 +88,7 @@ def get_pool_list():
     strat   = strat
     )
   #отправляем SQL запрос
+  c = conn.cursor()
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   s = '<h4  style="padding: 0px; margin:0px;margin-bottom:5px;">Даты инвестирования:</h4>'
@@ -91,6 +96,7 @@ def get_pool_list():
   for row in c:  
     for x in row:  
        s = s + '<input type="checkbox"  name="optdate[]"   value = "' + str(x) + '" checked > ' + str(x) + ' <Br/>'
+  c.close()
   return s 
 
 @app.route("/get_selected_pools")
