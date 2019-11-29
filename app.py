@@ -15,8 +15,8 @@ oracle_password = config['DEFAULT']['password']
 app = Flask(__name__, static_url_path='/static')
 
 #создаем соединение
-dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
-conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
+#dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+#conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
 #c = conn.cursor()
 
 #функция для привязки названий столбцов к их индексам 
@@ -40,8 +40,11 @@ def get_pool_table(strat,optdate):
     optdate = optdate
     )
   print (valid_sql_query)
-  #отправляем SQL запрос
+  #создаем соединение
+  dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+  conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
   c = conn.cursor()
+  #отправляем SQL запрос
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   s = '<table id="tab_result"><tr class="Heads">'  
@@ -56,6 +59,7 @@ def get_pool_table(strat,optdate):
   s = s + '</table>' 
   #print('start'+s+'end')
   c.close()
+  conn.close()
   return s 
 
 #функция для выгрузки инфы по переданным стратегиям и датам в виде "карточки пула"
@@ -67,10 +71,13 @@ def get_pool_details(strat,optdate):
     strat   = strat,
     optdate = optdate
     )
-  #print (valid_sql_query)
-  #отправляем SQL запрос
+  #print (valid_sql_query) 
   print (valid_sql_query)
+  #создаем соединение
+  dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+  conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
   c = conn.cursor()
+  #отправляем SQL запрос
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   f = fields(c)
@@ -93,9 +100,9 @@ def get_pool_details(strat,optdate):
     s = s + 'Остаток от текущ. пула: '  + str(rows[i][f['Остаток от текущ. пула']]) + '<p/>'
     s = s + 'Хвост от предыдущего пула: '  + str(rows[i][f['Хвост']]) + '<p/>'
     s = s + 'Итого остаток номинала: '  + str(rows[i][f['Итого остаток']]) + '<p/>'
-    s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'
-	
+    s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'	
   c.close()
+  conn.close()
   return s
 
 
@@ -109,9 +116,12 @@ def apriori():
   sql_query = fd.read()
   fd.close()
   valid_sql_query = sql_query
-  #отправляем SQL запрос
+  #создаем соединение
+  dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+  conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
   c = conn.cursor()
-  c.execute(valid_sql_query)  
+  #отправляем SQL запрос
+  c.execute(valid_sql_query) 
   #обрабатываем SQL ответ
   f = fields(c)
   #записываем результаты запроса в переменные
@@ -123,6 +133,7 @@ def apriori():
   strat=','.join(strat_list)
   optdate="to_date('"+"', 'dd.mm.yyyy'), to_date('".join(optdate_list)+"', 'dd.mm.yyyy')"; 
   c.close()
+  conn.close()
   if mode=='table':
     return get_pool_table(strat, optdate)
   else:	
@@ -154,8 +165,11 @@ def get_pool_list():
   valid_sql_query = sql_query.format(
     strat   = strat
     )
-  #отправляем SQL запрос
+  #создаем соединение
+  dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+  conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
   c = conn.cursor()
+  #отправляем SQL запрос
   c.execute(valid_sql_query) 
   #обрабатываем SQL ответ		
   #собираем список чекбоксов с датами
@@ -165,6 +179,7 @@ def get_pool_list():
     for x in row:  
        s = s + '<input type="checkbox"  name="optdate[]"   value = "' + str(x) + '" checked > ' + str(x) + ' <Br/>'
   c.close()
+  conn.close()
   return s  
 
 
