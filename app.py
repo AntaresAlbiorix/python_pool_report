@@ -17,7 +17,7 @@ app = Flask(__name__, static_url_path='/static')
 #создаем соединение
 dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
 conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-c = conn.cursor()
+#c = conn.cursor()
 
 #функция для привязки названий столбцов к их индексам 
 def fields(cursor):
@@ -41,6 +41,7 @@ def get_pool_table(strat,optdate):
     )
   print (valid_sql_query)
   #отправляем SQL запрос
+  c = conn.cursor()
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   s = '<table id="tab_result"><tr class="Heads">'  
@@ -54,6 +55,7 @@ def get_pool_table(strat,optdate):
   s = s + '</tr>' 
   s = s + '</table>' 
   #print('start'+s+'end')
+  c.close()
   return s 
 
 #функция для выгрузки инфы по переданным стратегиям и датам в виде "карточки пула"
@@ -68,6 +70,7 @@ def get_pool_details(strat,optdate):
   #print (valid_sql_query)
   #отправляем SQL запрос
   print (valid_sql_query)
+  c = conn.cursor()
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   f = fields(c)
@@ -92,13 +95,14 @@ def get_pool_details(strat,optdate):
     s = s + 'Итого остаток номинала: '  + str(rows[i][f['Итого остаток']]) + '<p/>'
     s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'
 	
-	
+  c.close()
   return s
 
 
 #ручка выгружает инфу по актуальному списку пулов 
 @app.route("/apriori")
 def apriori():
+  print('ya apriori')
   mode = request.args.get('mode')
   print (mode)
   fd = open('default_pool_list.sql', 'r')
@@ -106,6 +110,7 @@ def apriori():
   fd.close()
   valid_sql_query = sql_query
   #отправляем SQL запрос
+  c = conn.cursor()
   c.execute(valid_sql_query)  
   #обрабатываем SQL ответ
   f = fields(c)
@@ -117,11 +122,12 @@ def apriori():
     optdate_list.append(row[f['DATE_OPT']]) 
   strat=','.join(strat_list)
   optdate="to_date('"+"', 'dd.mm.yyyy'), to_date('".join(optdate_list)+"', 'dd.mm.yyyy')"; 
+  c.close()
   if mode=='table':
     return get_pool_table(strat, optdate)
   else:	
     return get_pool_details(strat, optdate)
- 
+  	
  
 #ручка вытаскивает инфу по выбранным пулам
 @app.route("/get_selected_pools")
@@ -140,6 +146,7 @@ def get_selected_pools():
  #ручка вытаскивает актуальный список дат для выбранной стратегии
 @app.route("/get_pool_list")
 def get_pool_list():
+  print('ya getpoollist')
   strat   = request.args.get('strat')
   fd = open('pool_list.sql', 'r')
   sql_query = fd.read()
@@ -148,14 +155,16 @@ def get_pool_list():
     strat   = strat
     )
   #отправляем SQL запрос
+  c = conn.cursor()
   c.execute(valid_sql_query) 
-  #обрабатываем SQL ответ
+  #обрабатываем SQL ответ		
   #собираем список чекбоксов с датами
   s = '<h4  style="padding: 0px; margin:0px;margin-bottom:5px;">Даты инвестирования:</h4>'
   s = s+'<input type="button" name="Check_All_opts" value="Снять все" class="chkbtn"	onClick="master_check(\'optdate[]\')" id = "optdate[]"> </br>'  
   for row in c:  
     for x in row:  
        s = s + '<input type="checkbox"  name="optdate[]"   value = "' + str(x) + '" checked > ' + str(x) + ' <Br/>'
+  c.close()
   return s  
 
 
