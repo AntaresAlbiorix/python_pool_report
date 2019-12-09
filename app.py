@@ -72,7 +72,6 @@ def get_pool_details(strat,optdate):
     strat   = strat,
     optdate = optdate
     )
-  #print (valid_sql_query) 
   print (valid_sql_query)
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
@@ -82,27 +81,90 @@ def get_pool_details(strat,optdate):
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   f = fields(c)
-  s = ''  
   #записываем Recordset в списки
   header_list = []
   rows = [[],[]]
   for header in c.description:
     header_list.append(str(header[0]))
   rows = [row for row in c] #list  
+  c.close()
+  #запрос для получения инфы по активам по каждому пулу
+  fd = open('opt_info_per_poolz.sql', 'r')
+  sql_query = fd.read()
+  fd.close()
+  valid_sql_query = sql_query.format(
+    strat   = strat,
+    optdate = optdate
+    )
+  print (valid_sql_query)
+  #создаем курсор
+  c = conn.cursor()
+  #отправляем SQL запрос
+  c.execute(valid_sql_query) 
+  # обрабатываем SQL ответ
+  m = fields(c) 
+  #записываем Recordset в списки
+  header_list2 = []
+  rows2 = [[],[]]
+  for header in c.description:
+    header_list2.append(str(header[0]))
+  rows2 = [row for row in c] #list  
+  c.close()
+#========================================================  
   #идем собирать карточку из списков
+  s = ''
+  k0=0
   for i in range(len(rows)):
-    s = s + '<h2>Карточка пула № ' + str(rows[i][f['Номер пула']]) + '</h2><p/>'
+    s = s + '<div class="row">'
+    s = s + '<div class="column"><h2>Карточка пула № ' + str(rows[i][f['Номер пула']]) + '</h2><p/>'
     s = s + 'Стратегия: '  + str(rows[i][f['Стратегия']]) + '<p/>'
     s = s + 'Дата инвестирования: '  + str(rows[i][f['Дата инвестирования']]) + '<p/>'
-    s = s + 'Средний КУ: ' + str(rows[i][f['Средний КУ']]) + '<p/>' 
+    s = s + 'Средний КУ: ' + str(rows[i][f['Средний КУ']]) + '<p/>'
     s = s + 'Курс USD: '  + str(rows[i][f['Курс USD']]) + '<p/>'
     s = s + 'Брутто премия по договорам: '  + str(rows[i][f['Премия по договорам']]) + '<p/>'
     s = s + 'Номинал по договорам: '  + str(rows[i][f['Номинал по договорам']]) + '<p/>'
     s = s + 'Остаток от текущ. пула: '  + str(rows[i][f['Остаток от текущ. пула']]) + '<p/>'
     s = s + 'Хвост от предыдущего пула: '  + str(rows[i][f['Хвост']]) + '<p/>'
     s = s + 'Итого остаток номинала: '  + str(rows[i][f['Итого остаток']]) + '<p/>'
-    s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'	
-  c.close()
+    s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'
+    s = s + '</div>'      
+    #собираем блок с активами по пулу
+    d = '<div class="column"><h2>Инфа по активам:  </h2><p/>'
+    for k in range(k0,len(rows2)):                      
+        print(str(rows[i][f['Номер пула']]))
+        print(str(rows2[k][m['POOL_ID']]))
+        if str(rows[i][f['Номер пула']])!=str(rows2[k][m['POOL_ID']]):
+            d=d+'</div>'
+            print('vishel')
+            continue
+        print('k')
+        print(k)
+        print(d)
+        d=d+'<div>'
+        d = d + str(k)+ str(k0)+'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
+        d = d + '<h3>ISIN: '  + str(rows2[k][m['ISIN']]) + '</h3><p/>'
+        d = d + 'Дата покупки: '  + str(rows2[k][m['TRANSACTION_DATE']]) + '<p/>'
+        d = d + 'Цена опциона: '  + str(rows2[k][m['OPTION_PRICE']]) + '<p/>'
+        if str(rows2[k][m['COUPON']]) == '1':
+            d = d + 'Дата последней переоценки: ' + str(rows2[k][m['CALC_DATE']]) + '<p/>'
+            d = d + 'Оценка опциона: '  + str(rows2[k][m['BS_VALUE']]) + '<p/>'
+        d = d + 'Купленный номинал: '  + str(rows2[k][m['FV_USD']]) + '<p/>'
+        d = d + 'Дата инвестирования: '  + str(rows2[k][m['INVEST_START_DATE']]) + '<p/>'
+        d = d + 'Дата экспирации: '  + str(rows2[k][m['INVEST_END_DATE']]) + '<p/>'
+        d=d+'</div>'
+        if k+1==len(rows2): 
+            d = d + '</div>'
+        elif str(rows2[k][m['POOL_ID']]) != str(rows2[k+1][m['POOL_ID']]):    
+            d = d + '</div>'
+            k0=k+1
+            print('k0')
+            print(k0)
+            break	
+    print(d)     			
+    s = s + d+ '</div>' 
+  
+  #print(s)
+   
   conn.close()
   return s
 
@@ -117,6 +179,7 @@ def apriori():
   sql_query = fd.read()
   fd.close()
   valid_sql_query = sql_query
+  print (valid_sql_query)
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")

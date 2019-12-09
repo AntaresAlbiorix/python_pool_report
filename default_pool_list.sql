@@ -6,7 +6,7 @@ from lifemakc.date_option t
 left join life2makc.pool_list p
   on p.date_option=t.date_opt
   and p.program_market=t.program
- and p.term=t.kol_year
+  and p.term=t.kol_year
 where 1=1 
 and upper(t.bank) not in 'TST' 
 group by    p.pool_id, 
