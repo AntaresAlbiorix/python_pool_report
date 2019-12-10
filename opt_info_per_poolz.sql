@@ -1,5 +1,5 @@
 select plst.pool_id,
-       str.coupon,
+       to_char(round(str.coupon, 0)) coupon,
 	   olst.isin,
        to_char(otrs.transaction_date) transaction_date,
        otrs.option_price,

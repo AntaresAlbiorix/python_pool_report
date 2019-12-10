@@ -131,21 +131,18 @@ def get_pool_details(strat,optdate):
     #собираем блок с активами по пулу
     d = '<div class="column"><h2>Инфа по активам:  </h2><p/>'
     for k in range(k0,len(rows2)):                      
-        print(str(rows[i][f['Номер пула']]))
-        print(str(rows2[k][m['POOL_ID']]))
         if str(rows[i][f['Номер пула']])!=str(rows2[k][m['POOL_ID']]):
             d=d+'</div>'
             print('vishel')
             continue
-        print('k')
-        print(k)
-        print(d)
+        #открываем блок для одной бумаги
         d=d+'<div>'
-        d = d + str(k)+ str(k0)+'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
+        d = d + 'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
         d = d + '<h3>ISIN: '  + str(rows2[k][m['ISIN']]) + '</h3><p/>'
         d = d + 'Дата покупки: '  + str(rows2[k][m['TRANSACTION_DATE']]) + '<p/>'
         d = d + 'Цена опциона: '  + str(rows2[k][m['OPTION_PRICE']]) + '<p/>'
-        if str(rows2[k][m['COUPON']]) == '1':
+        #для купонников пропускаем вывод переоценки
+        if str(rows2[k][m['COUPON']]) == '0':
             d = d + 'Дата последней переоценки: ' + str(rows2[k][m['CALC_DATE']]) + '<p/>'
             d = d + 'Оценка опциона: '  + str(rows2[k][m['BS_VALUE']]) + '<p/>'
         d = d + 'Купленный номинал: '  + str(rows2[k][m['FV_USD']]) + '<p/>'
@@ -157,14 +154,8 @@ def get_pool_details(strat,optdate):
         elif str(rows2[k][m['POOL_ID']]) != str(rows2[k+1][m['POOL_ID']]):    
             d = d + '</div>'
             k0=k+1
-            print('k0')
-            print(k0)
-            break	
-    print(d)     			
+            break     			
     s = s + d+ '</div>' 
-  
-  #print(s)
-   
   conn.close()
   return s
 
