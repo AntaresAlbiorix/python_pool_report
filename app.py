@@ -115,8 +115,10 @@ def get_pool_details(strat,optdate):
   s = ''
   k0=0
   for i in range(len(rows)):
-    s = s + '<div class="row">'
-    s = s + '<div class="column"><h2>Карточка пула № ' + str(rows[i][f['Номер пула']]) + '</h2><p/>'
+    #открываем карточку пула
+    s = s + '<div class="optinfo">'
+    #открываем блок с инфой по пулу
+    s = s + '<div class="opt_column1"><h2>Карточка пула № ' + str(rows[i][f['Номер пула']]) + '</h2><p/>'
     s = s + 'Стратегия: '  + str(rows[i][f['Стратегия']]) + '<p/>'
     s = s + 'Дата инвестирования: '  + str(rows[i][f['Дата инвестирования']]) + '<p/>'
     s = s + 'Средний КУ: ' + str(rows[i][f['Средний КУ']]) + '<p/>'
@@ -129,16 +131,20 @@ def get_pool_details(strat,optdate):
     s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'
     s = s + '</div>'      
     #собираем блок с активами по пулу
-    d = '<div class="column"><h2>Инфа по активам:  </h2><p/>'
+    d = '<div class="opt_column2"><h2>Инфа по активам:  </h2><p/>'
     for k in range(k0,len(rows2)):                      
+        print(k)
         if str(rows[i][f['Номер пула']])!=str(rows2[k][m['POOL_ID']]):
             d=d+'</div>'
-            print('vishel')
-            continue
+            #print('vishel')
+            #print(str(rows[i][f['Номер пула']]))
+            #print(str(rows2[k][m['POOL_ID']]))
+            break
         #открываем блок для одной бумаги
+        #print('normik')
         d=d+'<div>'
         d = d + 'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
-        d = d + '<h3>ISIN: '  + str(rows2[k][m['ISIN']]) + '</h3><p/>'
+        d = d + '<h4>ISIN: '  + str(rows2[k][m['ISIN']]) + '</h4><p/>'
         d = d + 'Дата покупки: '  + str(rows2[k][m['TRANSACTION_DATE']]) + '<p/>'
         d = d + 'Цена опциона: '  + str(rows2[k][m['OPTION_PRICE']]) + '<p/>'
         #для купонников пропускаем вывод переоценки
