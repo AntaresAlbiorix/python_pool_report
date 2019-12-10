@@ -22,5 +22,5 @@ select plst.pool_id,
   join life2makc.cls_strategy_ref str
     on str.strategy_id = olst.strategy_id
  where plst.strategy_id in ({strat})
-   and olst.invest_start_date in ({optdate}) 
+   and trim(olst.invest_start_date) in ({optdate}) 
  order by plst.pool_id  
