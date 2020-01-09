@@ -30,6 +30,21 @@ def fields(cursor):
       column = column + 1
   return results
 
+#прототип функции для считывания файла запроса, подстановки аргументов функции в запрос, установки соединения и запуска запроса  
+def sqlexec(sql, *args):
+  fd = open(slq, 'r')
+  sql_query = fd.read()
+  fd.close()
+  #for arg in args:
+  valid_sql_query = sql_query.format(*args)
+  #создаем соединение
+  dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+  conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
+  #отправляем SQL запрос
+  c = conn.cursor()
+  c.execute(valid_sql_query)  
+  
+  
 #функция для выгрузки инфы по переданным стратегиям и датам в виде таблицы
 def get_pool_table(strat,optdate):
   fd = open('nominal_per_pooolz.sql', 'r')
@@ -45,7 +60,6 @@ def get_pool_table(strat,optdate):
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
   c = conn.cursor()
   #отправляем SQL запрос
-  c = conn.cursor()
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   s = '<table id="tab_result"><tr class="Heads">'  
@@ -71,8 +85,7 @@ def get_pool_details(strat,optdate):
   valid_sql_query = sql_query.format(
     strat   = strat,
     optdate = optdate
-    )
-  #print (valid_sql_query) 
+    ) 
   print (valid_sql_query)
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
@@ -120,7 +133,6 @@ def apriori():
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  c = conn.cursor()
   #отправляем SQL запрос
   c = conn.cursor()
   c.execute(valid_sql_query) 
@@ -133,7 +145,7 @@ def apriori():
     strat_list.append(str(row[f['STRATEGY_ID']]))
     optdate_list.append(row[f['DATE_OPT']]) 
   strat=','.join(strat_list)
-  optdate="to_date('"+"', 'dd.mm.yyyy'), to_date('".join(optdate_list)+"', 'dd.mm.yyyy')"; 
+  optdate="to_date('"+"', 'dd.mm.yyyy'), to_date('".join(optdate_list)+"', 'dd.mm.yyyy')";#уточнить, нужен ли первый to_date? он же пустой? 
   c.close()
   conn.close()
   if mode=='table':
@@ -141,7 +153,7 @@ def apriori():
   else:	
     return get_pool_details(strat, optdate)
  
-#ручка вытаскивает инфу по выбранным пулам
+#ручка вытаскивает инфу по выбранным пулам в выбранном формате (таблица или карточка)
 @app.route("/get_selected_pools")
 def get_selected_pools():
   print('ya tut')
@@ -169,7 +181,6 @@ def get_pool_list():
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  c = conn.cursor()
   #отправляем SQL запрос
   c = conn.cursor()
   c.execute(valid_sql_query) 
