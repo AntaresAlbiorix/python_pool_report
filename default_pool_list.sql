@@ -8,6 +8,7 @@ left join life2makc.pool_list p
   and p.program_market=t.program
   and p.term=t.kol_year
 where 1=1 
+and t.inforce=1
 and upper(t.bank) not in 'TST' 
 group by    p.pool_id, 
   p.strategy_id, p.date_option
