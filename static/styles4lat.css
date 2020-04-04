@@ -31,30 +31,46 @@
 				padding:0px;
     		}   	
 
-    #container .column {
+	#container .column {
     			position: relative;
 				float: left;
     			height: 100%;
-    			 /*border:0.2px solid #4f7696; */
+    			/*border:0.2px solid #4f7696;*/
 				overflow: auto;
 				white-space: nowrap;
     		}
 	
 	#container .row{
-    			text-align:left;
-    			             
+    			text-align:left;             
 				border-collapse:collapse;
 				padding:10px;
 				overflow:auto;
     		}	    
 	
+	.optinfo {
+				padding-left: 40px;
+				text-align:left; 
+				overflow:auto;
+				background-color: #f6fbfc;
+				border:0.2px solid #4f7696;
+				
+			}     
+	
+	.opt_column1, .opt_column2 {
+				width: 50%;
+				position: relative;
+				float: left;
+				overflow: auto;
+				white-space: nowrap;
+			}	
+			
 	#center1 {
     			width: 23%;
 				background-color: #bccedc;
     		}
     
     #center2 {
-    			width: 0%;
+    			 
     		}	
     
     #center3 {
