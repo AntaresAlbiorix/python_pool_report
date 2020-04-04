@@ -14,11 +14,27 @@ oracle_password = config['DEFAULT']['password']
 
 app = Flask(__name__, static_url_path='/static')
 
-#создаем соединение
-#dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
-#conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-#c = conn.cursor()
+ 
+ 
+ 
+# def vld_sql(sql, param_dict): 		
+  # fd = open(sql, 'r')
+  # sql_query = fd.read()
+  # fd.close()
+  # valid_sql_query = sql_query.format(*args)
+  # #print (valid_sql_query)
+  
+  # return valid_sql_query
+	
+#на выходе должны получить список header, список списков строк (таблицу - зафетченый RS)
 
+  
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+ 
 #функция для привязки названий столбцов к их индексам 
 def fields(cursor):
   """ Given a DB API 2.0 cursor object that has been executed, returns
@@ -39,11 +55,10 @@ def get_pool_table(strat,optdate):
     strat   = strat,
     optdate = optdate
     )
-  print (valid_sql_query)
+  #print (valid_sql_query)
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  c = conn.cursor()
   #отправляем SQL запрос
   c = conn.cursor()
   c.execute(valid_sql_query) 
@@ -53,7 +68,8 @@ def get_pool_table(strat,optdate):
     s = s + '<th>'+ str(header[0]) + '</th>'
   s = s + '</tr>' 
   for row in c:  
-    s = s + '<tr>'  
+    s = s + '<tr>' 
+	
     for x in row:  
        s = s + '<td>' + str(x) + '</td>'  
   s = s + '</tr>' 
@@ -64,20 +80,17 @@ def get_pool_table(strat,optdate):
   return s 
 
 #функция для выгрузки инфы по переданным стратегиям и датам в виде "карточки пула"
-def get_pool_details(strat,optdate):
+def get_pool_details(*param_dict):
   fd = open('nominal_per_pooolz.sql', 'r')
   sql_query = fd.read()
   fd.close()
-  valid_sql_query = sql_query.format(
-    strat   = strat,
-    optdate = optdate
-    )
-  print (valid_sql_query)
+  valid_sql_query = sql_query.format(*param_dict)
+  #print (valid_sql_query)
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  c = conn.cursor()
   #отправляем SQL запрос
+  c = conn.cursor()  
   c.execute(valid_sql_query) 
   # обрабатываем SQL ответ
   f = fields(c)
@@ -92,11 +105,8 @@ def get_pool_details(strat,optdate):
   fd = open('opt_info_per_poolz.sql', 'r')
   sql_query = fd.read()
   fd.close()
-  valid_sql_query = sql_query.format(
-    strat   = strat,
-    optdate = optdate
-    )
-  print (valid_sql_query)
+  valid_sql_query = sql_query.format(*param_dict)
+  #print (valid_sql_query)
   #создаем курсор
   c = conn.cursor()
   #отправляем SQL запрос
@@ -133,7 +143,7 @@ def get_pool_details(strat,optdate):
     #собираем блок с активами по пулу
     d = '<div class="opt_column2"><h2>Инфа по активам:  </h2><p/>'
     for k in range(k0,len(rows2)):                      
-        print(k)
+        #print(k)
         if str(rows[i][f['Номер пула']])!=str(rows2[k][m['POOL_ID']]):
             d=d+'Опционы по пулу не найдены'+'</div>'
             #print('vishel')
@@ -169,18 +179,17 @@ def get_pool_details(strat,optdate):
 #ручка выгружает инфу по актуальному списку пулов 
 @app.route("/apriori")
 def apriori():
-  print('ya apriori')
+  #print('ya apriori')
   mode = request.args.get('mode')
-  print (mode)
+  #print (mode)
   fd = open('default_pool_list.sql', 'r')
   sql_query = fd.read()
   fd.close()
   valid_sql_query = sql_query
-  print (valid_sql_query)
+  #print (valid_sql_query)
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  c = conn.cursor()
   #отправляем SQL запрос
   c = conn.cursor()
   c.execute(valid_sql_query) 
@@ -188,12 +197,12 @@ def apriori():
   f = fields(c)
   #записываем результаты запроса в переменные
   strat_list = []
-  optdate_list=[]
+  optdate_list=[] 
   for row in c:
     strat_list.append(str(row[f['STRATEGY_ID']]))
     optdate_list.append(row[f['DATE_OPT']]) 
   strat=','.join(strat_list)
-  optdate="to_date('"+"', 'dd.mm.yyyy'), to_date('".join(optdate_list)+"', 'dd.mm.yyyy')"; 
+  optdate="to_date('".join(optdate_list)+"', 'dd.mm.yyyy')";  
   c.close()
   conn.close()
   if mode=='table':
@@ -207,18 +216,19 @@ def get_selected_pools():
   print('ya tut')
   strat = request.args.get('strat')
   optdate = request.args.get('optdate')
+  param_dict=[strat, optdate]
+  print (strat)
   mode = request.args.get('mode')
-  print (mode)
   if mode=='table':
     return get_pool_table(strat, optdate)
   else:	
-    return get_pool_details(strat, optdate)
+    return get_pool_details(strat, *param_dict)
  
  
  #ручка вытаскивает актуальный список дат для выбранной стратегии
 @app.route("/get_pool_list")
 def get_pool_list():
-  print('ya getpoollist')
+  #print('ya getpoollist')
   strat   = request.args.get('strat')
   fd = open('pool_list.sql', 'r')
   sql_query = fd.read()
@@ -229,7 +239,6 @@ def get_pool_list():
   #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  c = conn.cursor()
   #отправляем SQL запрос
   c = conn.cursor()
   c.execute(valid_sql_query) 
