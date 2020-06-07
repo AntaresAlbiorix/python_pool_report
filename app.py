@@ -13,7 +13,7 @@ oracle_login = config['DEFAULT']['login']
 oracle_password = config['DEFAULT']['password']
 
 app = Flask(__name__, static_url_path='/static')
-
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 # функция для привязки названий столбцов к их номерам
 def fields(cursor):
@@ -197,7 +197,7 @@ def get_pool_list():
 
 
 @app.route("/")
-def root():
+def root():  
   return render_template('index.html')
 
 if __name__ == '__main__':
