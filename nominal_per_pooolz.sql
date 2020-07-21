@@ -144,6 +144,9 @@ from
                                 
                               
                   where 1=1 and d.status in (0,1,7,6,4,14)  
+                            and lower(nvl(TRIM(d.Insurer_Last_Name),'X'))!= 'тест' 
+                            and lower(nvl(TRIM(d.Insurer_first_Name),'X')) not like '%страхователь%'
+                            and lower(nvl(TRIM(d.Insurer_middle_Name),'X')) not like '%тест%' 
                             and d.program_type in ('isz')    
                             and r.currency='USD'
                             and r.rate_date> to_date('01/03/2017', 'dd/mm/yyyy') -- уменьшение объема выборки 
