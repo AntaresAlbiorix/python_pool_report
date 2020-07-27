@@ -143,7 +143,7 @@ from
                                on inv.pool_id = p.pool_id
                                 
                               
-                  where 1=1 and d.status in (0,1,7,6,4,14)  
+                  where 1=1 and d.status in ({status})  
                             and lower(nvl(TRIM(d.Insurer_Last_Name),'X'))!= 'тест' 
                             and lower(nvl(TRIM(d.Insurer_first_Name),'X')) not like '%страхователь%'
                             and lower(nvl(TRIM(d.Insurer_middle_Name),'X')) not like '%тест%' 

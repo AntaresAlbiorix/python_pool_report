@@ -26,7 +26,7 @@ def fields(cursor):
     column = column + 1
   return results
 
-
+#функция для подстановки списка параметров в шаблон запроса, установка соединения, выполнение запроса
 def execute_sql(sql_template, param_dict=None):
   with open(sql_template, 'r') as fd:
     sql_query = fd.read()
@@ -34,6 +34,7 @@ def execute_sql(sql_template, param_dict=None):
     valid_sql_query = sql_query
   else:
     valid_sql_query = sql_query.format(**param_dict)
+  print(valid_sql_query)
  #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
@@ -136,7 +137,9 @@ def get_pool_details(param_dict):
 @app.route("/apriori")
 def apriori():
   print('ya apriori')
-  mode = request.args.get('mode')
+  #переменные с веб-формы 
+  mode = request.args.get('mode')   #формат вывода информации
+  status=request.args.get('status') #выгрузка с лапсами или без
   print (mode)
   result_table = execute_sql('default_pool_list.sql')
   #записываем результаты запроса в переменные
@@ -146,35 +149,51 @@ def apriori():
   for row in result_table['rows']:
     strat_list.append(str(row[f['STRATEGY_ID']]))
     optdate_list.append(row[f['DATE_OPT']])
+  #присвоение значений переменным
   strat = ','.join(strat_list)
   optdate = "to_date('" + "', 'dd.mm.yyyy'), to_date('".join(optdate_list) + "', 'dd.mm.yyyy')"
+  if status=='1':
+    status = "0,1,7,4"
+  else:	
+    status = "0,1,7,4,6"
+  #сбор параметров для передачи в следующую ручку с основным запросом
   param_dict={
     'strat':strat
     ,'optdate':optdate
+	,'status':status
   }
   if mode=='table':
     return get_pool_table(param_dict)
   else:	
     return get_pool_details(param_dict)
+ 
  
 #ручка вытаскивает инфу по выбранным пулам
 @app.route("/get_selected_pools")
 def get_selected_pools():
   print('ya tut')
+  #переменные с веб-формы 
+  mode = request.args.get('mode')   #формат вывода информации
+  status=request.args.get('status') #выгрузка с лапсами или без
+  print (mode)
+  #присвоение значений переменным
   strat = request.args.get('strat')
   optdate = request.args.get('optdate')
+  if status=='1':
+    status = "0,1,7,4"
+  else:	
+    status = "0,1,7,4,6"
+  #сбор параметров для передачи в следующую ручку с основным запросом
   param_dict={
-    'strat' : strat
+    'strat':strat
     ,'optdate':optdate
+	,'status':status
   }
-  mode = request.args.get('mode')
-  print (mode)
   if mode=='table':
     return get_pool_table(param_dict)
   else:	
     return get_pool_details(param_dict)
  
-
 
  #ручка вытаскивает актуальный список дат для выбранной стратегии
 @app.route("/get_pool_list")
@@ -184,7 +203,6 @@ def get_pool_list():
     'strat': strat
   }
   result_table = execute_sql('pool_list.sql', param_dict)
-
   #обрабатываем SQL ответ		
   #собираем список чекбоксов с датами
   s = '<h4  style="padding: 0px; margin:0px;margin-bottom:5px;">Даты инвестирования:</h4>'

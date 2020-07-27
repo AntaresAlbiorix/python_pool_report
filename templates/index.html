@@ -28,6 +28,11 @@
 		<input type="radio" name="mode" value="table" checked> Таблица </input>
 		<input type="radio" name="mode" value="details"  > Подробно</input>
 		<input 												   type="button"  style=" display:inline-block; float:right; margin-right: 25px; margin-top: 5px; padding: 0px; width:120px;  height: 30px;"	 onclick="tableToExcel('tab_result', 'W3C Example Table')" value="Export to Excel">
+		
+		
+		<input type="checkbox" id="status" checked style="   margin-left: 65px; margin-top: 5px;   "> <label for="status">выкинуть лапсы</label>  </input>
+	
+	
 	</div>  
 	
 	<div id="container">
@@ -60,18 +65,19 @@
                     $("#upcenter1").html(pool_list); //div id куда должен встать результат из ручки
             });
 			var mode=implode_array('mode',0);
-			$.get("/apriori", {mode:mode},  function(apriori) { 
+			var status=document.getElementById("status").checked*1;
+			$.get("/apriori", {mode:mode, status:status},  function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
                 });		
 			//по кнопке
 			$("#back_to_default_button").click(function(){	
 				var mode=implode_array('mode',0);
-                $.get("/apriori", {mode:mode}, function(apriori) { 
+				var status=document.getElementById("status").checked*1;
+                $.get("/apriori", {mode:mode, status:status}, function(apriori) { 
                     $("#center3").html(apriori); //div id куда должен встать результат из ручки
                 });	
             });		
 		
-
 //подтянуть даты инвестирования в зависимости от выбранных стратегий	
 			$("#getlist_button").click(function(){							
 				var strat=implode_array('strat[]',0);
@@ -91,8 +97,9 @@
 					optdate=optdate.split(',');
 					optdate="to_date('"+optdate.join("', 'dd.mm.yyyy'), to_date('")+"', 'dd.mm.yyyy')";
 				var mode=implode_array('mode',0);
+				var status=document.getElementById("status").checked*1;
 				//собираем переменные и идем в ручку 
-                $.get("/get_selected_pools", {strat: strat, optdate: optdate, mode:mode}, function( result_table ) { 
+                $.get("/get_selected_pools", {strat: strat, optdate: optdate, mode:mode, status:status}, function( result_table ) { 
                     $("#center3").html(result_table); //div id куда должен встать результат из ручки 
 					btn.button('reset');
                 });
