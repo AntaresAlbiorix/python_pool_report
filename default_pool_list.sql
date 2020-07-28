@@ -5,7 +5,7 @@ select   distinct
 from lifemakc.dogovor t 
 join life2makc.policy_ku_4_budget_ver_tab v
      on v.contract_id=t.contract_id
-join lifemakc.cls_invest_details inv
+join life2makc.cls_invest_details inv
      on inv.product_key=v.product_key
      and inv.product_ver = v.product_ver       
 where 1=1 

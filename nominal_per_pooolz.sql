@@ -114,7 +114,7 @@ from
                                 on k.contract_id=d.contract_id
 
                   -- ИД пула
-                  join lifemakc.cls_invest_details inv
+                  join life2makc.cls_invest_details inv
                                 on inv.product_key=k.product_key
                                 and inv.product_ver=k.product_ver
                   

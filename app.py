@@ -34,7 +34,6 @@ def execute_sql(sql_template, param_dict=None):
     valid_sql_query = sql_query
   else:
     valid_sql_query = sql_query.format(**param_dict)
-  print(valid_sql_query)
  #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
