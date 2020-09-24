@@ -2,10 +2,10 @@ select plst.pool_id,
        to_char(round(str.coupon, 0)) coupon,
 	   olst.isin,
        to_char(otrs.transaction_date) transaction_date,
-       otrs.option_price,
+       to_char(round(otrs.option_price*100,3)||'%') option_price,
        to_char(nvl(oclc.reporting_date, oclc.valuation_date)) calc_date,
-       oclc.bs_value,
-       otrs.transaction_face_value fv_usd,
+       to_char(round(oclc.bs_value*100,3)||'%') bs_value,
+       to_char(otrs.transaction_face_value, '999,999,990.99') fv_usd,
        to_char(olst.invest_start_date) invest_start_date,
        to_char(olst.invest_end_date) invest_end_date
   from life2makc.rf_option_list olst

@@ -110,14 +110,12 @@ def get_pool_details(param_dict):
         #открываем блок для одной бумаги
         #print('normik')
         d=d+'<div>'
-        d = d + 'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
+        #d = d + 'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
         d = d + '<h4>ISIN: '  + str(rows2[k][m['ISIN']]) + '</h4><p/>'
         d = d + 'Дата покупки: '  + str(rows2[k][m['TRANSACTION_DATE']]) + '<p/>'
         d = d + 'Цена опциона: '  + str(rows2[k][m['OPTION_PRICE']]) + '<p/>'
-        #для купонников пропускаем вывод переоценки
-        if str(rows2[k][m['COUPON']]) == '0':
-            d = d + 'Дата последней переоценки: ' + str(rows2[k][m['CALC_DATE']]) + '<p/>'
-            d = d + 'Оценка опциона: '  + str(rows2[k][m['BS_VALUE']]) + '<p/>'
+        d = d + 'Дата последней переоценки: ' + str(rows2[k][m['CALC_DATE']]) + '<p/>'
+        d = d + 'Оценка опциона: '  + str(rows2[k][m['BS_VALUE']]) + '<p/>'
         d = d + 'Купленный номинал: '  + str(rows2[k][m['FV_USD']]) + '<p/>'
         d = d + 'Дата инвестирования: '  + str(rows2[k][m['INVEST_START_DATE']]) + '<p/>'
         d = d + 'Дата экспирации: '  + str(rows2[k][m['INVEST_END_DATE']]) + '<p/>'
