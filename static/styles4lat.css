@@ -31,7 +31,10 @@
 	#header {
     			height: 40px;
 				text-align:center;
-				background-color: #4f7696;
+				background: linear-gradient(90deg,#d179ab,#bccedc);
+				background: linear-gradient(200deg,#f6ff3f,#3ff8ff,#3fb5ff,#e76ae5,#fe4e76,#fe834e,#7eb7ff);
+				
+				/*background-color: #4f7696;*/
 				color: #eef3f7;
 				margin:0px;
 				padding:0px;
@@ -71,7 +74,7 @@
 			}	
 			
 	#center1 {
-    			width: 23%;
+    			width: 20%;
 				background-color: #bccedc;
     		}
     
@@ -80,7 +83,8 @@
     		}	
     
     #center3 {
-    			width: 77%;
+    			width: 80%;
+				
     		}	
     
     #left {
@@ -129,8 +133,7 @@
     		}
    
     tr:hover {
-    			background-color: #a9c4d6;
-				background-color: #d179ab;
+    			background-color: #d179ab;
     		}
     		
 	tr.heads{

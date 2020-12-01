@@ -23,4 +23,4 @@ select plst.pool_id,
     on str.strategy_id = olst.strategy_id
  where plst.strategy_id in ({strat})
    and trim(olst.invest_start_date) in ({optdate}) 
- order by plst.pool_id  
+ order by plst.pool_id ,  otrs.transaction_date

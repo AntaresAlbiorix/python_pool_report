@@ -7,7 +7,7 @@ select  --*
      , q.strategy_name   										"Стратегия"   
      , to_char(q.date_option)   								"Дата инвестирования"                                                                     
      , q.rate													"Курс USD"
-     , to_char(round(q.AVG_KU,4)*100 ||'%') 					"Средний КУ"
+     , to_char(round(q.AVG_KU,4)*100 ) 					"Средний КУ"
      , to_char(q.premia_rur, '999,999,990.99')                  "Премия по договорам"
 	 , to_char(q.nominal, '999,999,990.99')						"Номинал по договорам"
      , to_char(p.face_value , '999,999,990.99')					"Купленный номинал"
@@ -177,4 +177,4 @@ where 1=1
 --and q.pool_id=17
 and q.strategy_id in ({strat} )
 and q.DATE_OPTION in ({optdate}) 
-order by p.pool_id
+order by q.DATE_OPTION, p.pool_id
