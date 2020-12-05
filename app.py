@@ -79,12 +79,18 @@ def get_pool_details(param_dict):
   #записываем Recordset в списки
   header_list2 = result_table['field_dict']
   rows2 = result_table['rows']
+  #запрос для получения инфы по ДИД по каждому пулу
+  result_table = execute_sql('eib_paid.sql', param_dict)
+  #записываем Recordset в списки
+  header_list3 = result_table['field_dict']
+  rows3 = result_table['rows']
 #========================================================  
   #идем собирать карточку из списков
   s = ''
-  k0=0
+  k0=0 			#итератор опционов в одном пуле
   f=header_list
-  m=header_list2
+  f2=header_list2
+  f3=header_list3
   for i in range(len(rows)):
     #открываем карточку пула
     s = s + '<div class="optinfo">'
@@ -93,36 +99,44 @@ def get_pool_details(param_dict):
     s = s + 'Стратегия: '  + str(rows[i][f['Стратегия']]) + '<p/>'
     s = s + 'Дата инвестирования: '  + str(rows[i][f['Дата инвестирования']]) + '<p/>'
     s = s + 'Средний КУ: ' + str(rows[i][f['Средний КУ']]) + '%'+ '<p/>'
-    s = s + 'Курс USD: '  + str(rows[i][f['Курс USD']]) + '<p/>'
-    s = s + 'Брутто премия по договорам: '  + str(rows[i][f['Премия по договорам']]) + '<p/>'
-    s = s + 'Номинал по договорам: '  + str(rows[i][f['Номинал по договорам']]) + '<p/>'
+    #s = s + 'Курс USD: '  + str(rows[i][f['Курс USD']]) + '<p/>'
+    s = s + 'Сумма брутто премий (руб.): '  + str(rows[i][f['Премия по договорам']]) + '<p/>'
+    #s = s + 'Номинал по договорам: '  + str(rows[i][f['Номинал по договорам']]) + '<p/>'
     #s = s + 'Остаток от текущ. пула: '  + str(rows[i][f['Остаток от текущ. пула']]) + '<p/>'
     #s = s + 'Хвост от предыдущего пула: '  + str(rows[i][f['Хвост']]) + '<p/>'
-    s = s + 'Итого остаток номинала: '  + str(rows[i][f['Итого остаток']]) + '<p/>'
-    #s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'
+    #s = s + 'Итого остаток номинала: '  + str(rows[i][f['Итого остаток']]) + '<p/>'
+    #s = s + 'Лимит продаж: '  + str(rows[i][f['Лимит продаж']]) + '<p/>'     
+    if str(rows[i][f['Номер пула']])!=str(rows3[i][f3['POOL_ID']]):
+        break
+    if str(rows3[i][f3['STATUS']])=='5':
+        s = s + 'Сумма возмещения (руб.): '  + str(rows3[i][f3['SETTLE_RUR']]) + '<p/>'
+        s = s + 'Сумма ДИД по нерасторгнутым (руб.): '  + str(rows3[i][f3['EIB_NONLAPSE']]) + '<p/>'
+        s = s + 'Сумма ДИД по заявленным убыткам (руб.): '  + str(rows3[i][f3['BONUS_CLAIMED']]) + '<p/>'
     s = s + '</div>'      
     #собираем блок с активами по пулу
     d = '<div class="opt_column2"><h2>Инфа по активам:  </h2><p/>'
     for k in range(k0,len(rows2)):
-        if str(rows[i][f['Номер пула']])!=str(rows2[k][m['POOL_ID']]):
-            d=d+'Опционы по пулу не найдены'+'</div>'
+        if str(rows[i][f['Номер пула']])!=str(rows2[k][f2['POOL_ID']]):
+            d=d + 'Опционы по пулу не найдены'+'</div>'
             break
         #открываем блок для одной бумаги
         #print('normik')
         d=d+'<div>'
-        #d = d + 'Номер пула: '  + str(rows2[k][m['POOL_ID']]) + '<p/>'
-        d = d + '<h4>ISIN: '  + str(rows2[k][m['ISIN']]) + '</h4><p/>'
-        d = d + 'Дата покупки: '  + str(rows2[k][m['TRANSACTION_DATE']]) + '<p/>'
-        d = d + 'Цена покупки: '  + str(rows2[k][m['OPTION_PRICE']]) + '<p/>'
-        d = d + 'Дата последней переоценки: ' + str(rows2[k][m['CALC_DATE']]) + '<p/>'
-        d = d + 'Доходность опциона: '  + str(rows2[k][m['BS_VALUE']]) + '<p/>'
-        d = d + 'Купленный номинал: '  + str(rows2[k][m['FV_USD']]) + '<p/>'
-        d = d + 'Дата инвестирования: '  + str(rows2[k][m['INVEST_START_DATE']]) + '<p/>'
-        d = d + 'Дата экспирации: '  + str(rows2[k][m['INVEST_END_DATE']]) + '<p/>'
+        #d = d + 'Номер пула: '  + str(rows2[k][f2['POOL_ID']]) + '<p/>'
+        d = d + '<h4>ISIN: '  + str(rows2[k][f2['ISIN']]) + '</h4><p/>'
+        #d = d + 'Дата инвестирования: '  + str(rows2[k][f2['INVEST_START_DATE']]) + '<p/>'
+        d = d + 'Дата покупки: '  + str(rows2[k][f2['TRANSACTION_DATE']]) + '<p/>'
+        d = d + 'Цена покупки: '  + str(rows2[k][f2['OPTION_PRICE']]) + '<p/>'
+        d = d + 'Купленный номинал: '  + str(rows2[k][f2['FV_USD']]) + '<p/>'        
+        d = d + 'Дата последней переоценки: ' + str(rows2[k][f2['CALC_DATE']]) + '<p/>'
+        d = d + 'Доходность опциона: '  + str(rows2[k][f2['BS_VALUE']]) + '<p/>'
+        d = d + 'Дата экспирации: '  + str(rows2[k][f2['INVEST_END_DATE']]) + '<p/>'
+        if str(rows2[k][f2['STATUS']])=='5': #размер выплаты от эмитента выводим только по истекшим опционам (офк)
+            d = d + 'Сумма возмещения: ' + str(rows2[k][f2['SUM_CUR']]) + '<p/>'
         d=d+'</div>'
         if k+1==len(rows2): 
             d = d + '</div>'
-        elif str(rows2[k][m['POOL_ID']]) != str(rows2[k+1][m['POOL_ID']]):    
+        elif str(rows2[k][f2['POOL_ID']]) != str(rows2[k+1][f2['POOL_ID']]):    
             d = d + '</div>'
             k0=k+1
             break     			
@@ -130,7 +144,7 @@ def get_pool_details(param_dict):
   return s
 
 
-#ручка выгружает инфу по актуальному списку пулов 
+#ручка выгружает инфу по актуальному списку пулов (за последние 30 дней)
 @app.route("/apriori")
 def apriori():
   print('ya apriori')
