@@ -31,9 +31,9 @@
 	#header {
     			height: 40px;
 				text-align:center;
-				background: linear-gradient(90deg,#d179ab,#bccedc);
+
 				background: linear-gradient(200deg,#f6ff3f,#3ff8ff,#3fb5ff,#e76ae5,#fe4e76,#fe834e,#7eb7ff);
-				
+				background: linear-gradient(90deg,#d179ab,#bccedc);
 				/*background-color: #4f7696;*/
 				color: #eef3f7;
 				margin:0px;
