@@ -11,7 +11,7 @@ select   plst.pool_id
     on olst.strategy_id = plst.strategy_id
    and plst.hist_stage = olst.hist_stage
   
-  left join life2makc.rf_option_settlement os
+  join life2makc.rf_option_settlement os
     on os.option_id=olst.option_id
   
   left join lifemakc.rate exr
