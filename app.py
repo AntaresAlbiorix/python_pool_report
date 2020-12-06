@@ -26,19 +26,27 @@ def fields(cursor):
     column = column + 1
   return results
 
-#функция для подстановки списка параметров в шаблон запроса, установка соединения, выполнение запроса
-def execute_sql(sql_template, param_dict=None):
+
+#функция для сборки запроса
+def compile_sql(sql_template, param_dict=None):
   with open(sql_template, 'r') as fd:
     sql_query = fd.read()
   if param_dict==None:
     valid_sql_query = sql_query
   else:
     valid_sql_query = sql_query.format(**param_dict)
- #создаем соединение
+  return valid_sql_query
+
+
+#функция для подстановки списка параметров в шаблон запроса, установка соединения, выполнение запроса
+# TODO: refactor execute_sql into two functions: compile_sql and execute(sql_1,sql_2,sql3,...)
+def execute_sql(sql_template, param_dict=None):
+  valid_sql_query=compile_sql(sql_template, param_dict)
+  #создаем соединение
   dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
   conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding = "UTF-8", nencoding = "UTF-8")
-  #отправляем SQL запрос
   c = conn.cursor()
+  #отправляем SQL запрос
   c.execute(valid_sql_query)
   # обрабатываем SQL ответ
   f = fields(c)
@@ -64,34 +72,39 @@ def get_pool_table(param_dict):
     for x in row:  
        s = s + '<td>' + str(x) + '</td>'  
   s = s + '</tr>' 
-  s = s + '</table>' 
-  #print('start'+s+'end')
+  s = s + '</table>'
   return s 
+
 
 #функция для выгрузки инфы по переданным стратегиям и датам в виде "карточки пула"
 def get_pool_details(param_dict):
-  result_table = execute_sql('nominal_per_pooolz.sql', param_dict)
-  #записываем Recordset в списки
-  header_list = result_table['field_dict']
-  rows = result_table['rows']
-  #запрос для получения инфы по активам по каждому пулу
-  result_table = execute_sql('opt_info_per_poolz.sql', param_dict)
-  #записываем Recordset в списки
-  header_list2 = result_table['field_dict']
-  rows2 = result_table['rows']
-  #запрос для получения инфы по ДИД по каждому пулу
-  result_table = execute_sql('eib_paid.sql', param_dict)
-  #записываем Recordset в списки
-  header_list3 = result_table['field_dict']
-  rows3 = result_table['rows']
+  # создаем соединение
+  dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
+  conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding="UTF-8", nencoding="UTF-8")
+  c = conn.cursor()
+  valid_nominal_per_pooolz = compile_sql('nominal_per_pooolz.sql', param_dict)
+  valid_opt_info_per_poolz = compile_sql('opt_info_per_poolz.sql', param_dict)
+  valid_eib_paid           = compile_sql('eib_paid.sql', param_dict)
+  #выполняем первый запрос
+  c.execute(valid_nominal_per_pooolz)
+  # обрабатываем SQL ответ
+  f = fields(c)
+  rows = c.fetchall()
+  # выполняем второй запрос
+  c.execute(valid_opt_info_per_poolz)
+  # обрабатываем SQL ответ
+  f2 = fields(c)
+  rows2 = c.fetchall()
+  # выполняем третий запрос
+  c.execute(valid_eib_paid)
+  # обрабатываем SQL ответ
+  f3 = fields(c)
+  rows3 = c.fetchall()
+  c.close()
+  conn.close()
 #========================================================  
   #идем собирать карточку из списков
   s = ''
-  k0=0 			#итератор опционов в одном пуле
-  f=header_list
-  f2=header_list2
-  f3=header_list3
-
   nominal_table = OrderedDict((i[f['Номер пула']], i) for i in rows) #i - строка из RS1
   eib_table =     OrderedDict((i[f3['POOL_ID']], i) for i in rows3)
   asset_table =   OrderedDict()
@@ -101,7 +114,6 @@ def get_pool_details(param_dict):
       asset_table[pool_id].append(asset)
     else:
       asset_table[pool_id] = [asset]
-
 
   for k, v in nominal_table.items(): #key, value
     #открываем карточку пула
@@ -133,7 +145,7 @@ def get_pool_details(param_dict):
         d=d+'<div>'
         #d = d + 'Номер пула: '  + str(k) + '<p/>'
         d = d + '<h4>ISIN: '  + str(asset[f2['ISIN']]) + '</h4><p/>'
-        #d = d + 'Дата инвестирования: '  + str(asset_table[k][f2['INVEST_START_DATE']]) + '<p/>'
+        #d = d + 'Дата инвестирования: '  + str(asset[f2['INVEST_START_DATE']]) + '<p/>'
         d = d + 'Дата покупки: '  + str(asset[f2['TRANSACTION_DATE']]) + '<p/>'
         d = d + 'Цена покупки: '  + str(asset[f2['OPTION_PRICE']]) + '<p/>'
         d = d + 'Купленный номинал (USD): '  + str(asset[f2['FV_USD']]) + '<p/>'
