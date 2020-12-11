@@ -19,7 +19,7 @@
     			padding-left: 0px;      /* LC width */
 				padding-right: 0px;     /* RC width */
 				/*background-color: #ddd4e3; */
-				height: calc(100% - 60px);				
+				height: calc(100% - 60px);
     		}
     				
 	.form{
@@ -71,17 +71,15 @@
 			}	
 			
 	#center1 {
-    			width: 20%;
+    			width: 21%;
 				background-color: #bccedc;
     		}
     
     #center2 {
-    			 
     		}	
     
     #center3 {
-    			width: 80%;
-				
+    			width: 79%;
     		}	
     
     #left {
