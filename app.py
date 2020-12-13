@@ -4,9 +4,12 @@ from flask import render_template
 from collections import OrderedDict
 import cx_Oracle
 import configparser
+import os
 
 config = configparser.ConfigParser()
-config.read('snake.ini')
+folder = os.path.abspath(os.path.dirname(__file__))
+folder+='/'
+config.read(folder + "snake.ini")
 oracle_login = config['DEFAULT']['login']
 oracle_password = config['DEFAULT']['password']
 
@@ -28,7 +31,7 @@ def fields(cursor):
 
 # функция для сборки запроса
 def compile_sql(sql_template, param_dict=None):
-    with open(sql_template, 'r') as fd:
+    with open(folder + sql_template, 'r') as fd:
         sql_query = fd.read()
     if param_dict == None:
         valid_sql_query = sql_query
@@ -159,8 +162,7 @@ def apriori():
     # переменные с веб-формы
     mode = request.args.get('mode')  # формат вывода информации
     status = request.args.get('status')  # выгрузка с лапсами или без
-    with open('default_pool_list.sql', 'r') as fd:
-        valid_sql_query = fd.read()
+    valid_sql_query = compile_sql('default_pool_list.sql')
     result_table = execute_sql(valid_sql_query)
     # записываем результаты запроса в переменные
     strat_list = []
@@ -239,5 +241,5 @@ def root():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=86, debug=True)
-    #app.run()
+    #app.run(host='0.0.0.0', port=82, debug=True)
+    app.run()
