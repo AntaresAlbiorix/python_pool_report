@@ -156,11 +156,9 @@ def get_pool_details(param_dict):
 # ручка выгружает инфу по актуальному списку пулов (за последние 30 дней)
 @app.route("/apriori")
 def apriori():
-    print('ya apriori')
     # переменные с веб-формы
     mode = request.args.get('mode')  # формат вывода информации
     status = request.args.get('status')  # выгрузка с лапсами или без
-    print(mode)
     with open('default_pool_list.sql', 'r') as fd:
         valid_sql_query = fd.read()
     result_table = execute_sql(valid_sql_query)
@@ -193,11 +191,9 @@ def apriori():
 # ручка вытаскивает инфу по выбранным пулам
 @app.route("/get_selected_pools")
 def get_selected_pools():
-    print('ya tut')
     # переменные с веб-формы
     mode = request.args.get('mode')  # формат вывода информации
     status = request.args.get('status')  # выгрузка с лапсами или без
-    print(mode)
     # присвоение значений переменным
     strat = request.args.get('strat')
     optdate = request.args.get('optdate')
@@ -243,4 +239,5 @@ def root():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=82, debug=True)
+    app.run(host='0.0.0.0', port=86, debug=True)
+    #app.run()
