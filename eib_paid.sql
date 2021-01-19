@@ -20,7 +20,7 @@ select   plst.pool_id
     
   left join ( select   sum(nvl(t.bonus_paid,0)) bonus_paid, sum(nvl(t.bonus_ocr,0)) bonus_ocr, sum(nvl(e.bonus,0)) eib, sum(case when d.status = 4 then nvl(e.bonus,0) end) eib4, p.pool_id 
               from lifemakc.dogovor d 
-                left join  life2makc.zhu12m2020 t
+                left join  life2makc.zhu4eib t
                  on d.contract_id = t.cid
                 left join life2makc.policy_ku_4_budget_ver_tab v
                  on d.contract_id = v.contract_id  
