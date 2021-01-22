@@ -1,25 +1,30 @@
 select   plst.pool_id
        , olst.STATUS 
-       , to_char(nvl(os.sum_cur*exr.rate,0), '999,999,990.99') settle_rur
-       , to_char(NVL(zhu.eib,0), '999,999,990.99') eib_all
-       , to_char(NVL(zhu.eib4,0), '999,999,990.99') eib_nonlapse
-       , to_char(zhu.bonus_paid+zhu.bonus_ocr, '999,999,990.99') bonus_claimed
-  
+       , to_char(nvl(os.sum_cur*exr.rate,0), '999,999,990.99') settle_rur        -- сумма полученного возмещения по опциону
+       , to_char(NVL(zhu.eib,0), '999,999,990.99') eib_all                       -- ДИД по всем договорам
+       , to_char(NVL(zhu.eib4,0), '999,999,990.99') eib_nonlapse                 -- ДИД по всем нерасторгнувшимся
+       , to_char(zhu.bonus_paid+zhu.bonus_ocr, '999,999,990.99') bonus_claimed   -- заявленные бонусы из последнего ЖУ
+       , to_char(exr.rate / exr0.rate , '999,999,990.99999999999999')    K                   -- курсовая разница
+
   from life2makc.pool_list plst
-  
+
   join life2makc.rf_option_list olst
     on olst.strategy_id = plst.strategy_id
    and plst.hist_stage = olst.hist_stage
-  
+
   join life2makc.rf_option_settlement os
     on os.option_id=olst.option_id
-  
+
+  left join lifemakc.rate exr0
+     on exr0.currency = 'USD'
+    and exr0.rate_date = olst.invest_start_date
+
   left join lifemakc.rate exr
      on exr.currency = 'USD'
     and exr.rate_date = olst.invest_end_date
-    
-  left join ( select   sum(nvl(t.bonus_paid,0)) bonus_paid, sum(nvl(t.bonus_ocr,0)) bonus_ocr, sum(nvl(e.bonus,0)) eib, sum(case when d.status = 4 then nvl(e.bonus,0) end) eib4, p.pool_id 
-              from lifemakc.dogovor d 
+
+  left join ( select   sum(nvl(t.bonus_paid,0)) bonus_paid, sum(nvl(t.bonus_ocr,0)) bonus_ocr, sum(nvl(e.bonus,0)) eib, sum(case when d.status = 4 then nvl(e.bonus,0) end) eib4, p.pool_id
+              from lifemakc.dogovor d
                 left join  life2makc.zhu4eib t
                  on d.contract_id = t.cid
                 left join life2makc.policy_ku_4_budget_ver_tab v

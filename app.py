@@ -129,6 +129,7 @@ def get_pool_details(param_dict):
             s = s + 'Сумма возмещения (руб.): ' + str(eib_table[k][f3['SETTLE_RUR']]) + '<p/>'
             s = s + 'Сумма ДИД по нерасторгнутым (руб.): ' + str(eib_table[k][f3['EIB_NONLAPSE']]) + '<p/>'
             s = s + 'Сумма ДИД по заявленным убыткам (руб.): ' + str(eib_table[k][f3['BONUS_CLAIMED']]) + '<p/>'
+            s = s + 'Курсовая разница: ' + str(eib_table[k][f3['K']]) + '<p/>'
         s = s + '</div>'
         # собираем блок с активами по пулу
         d = '<div class="opt_column2"><h2>Инфа по активам:  </h2><p/>'
