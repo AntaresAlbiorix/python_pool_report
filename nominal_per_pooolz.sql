@@ -66,19 +66,19 @@ from
                        , p.strategy_id
                        , p.hist_stage
                        , p.coupon as is_coupon
-					   , p.strategy_name
+					             , p.strategy_name
                        , d.date_option
                        , R.RATE
-					   , d.premia_rur
+					             , d.premia_rur
 
                       , -- Вклад каждого полиса в ( 1 / [средневзвешенный КУ]). Сумма этих показателей по пулу дает 1 / [средневзвешенный КУ] по пулу
                         -- Тоже самое, что Вклад каждого полиса в [средневзвешенный КУ]
                         -- SUMj( Gj x Фj / SUMi(Gi)) [=средневзвеш КУ] = 1 / SUMj( Gj / SUMi(Gi x Фi)) [рассчитывается в запросе]
 
                         -- [1. Премия в валюте] / [ 2. Номинал по пулу]
-                        /* 1 */ (d.premia_val * (case when lower(d.currency)='rur' then 1/r.rate else 1 end))                 --* (case when d.bank='MKX' then 0 else 1 end)
+                        /* 1 */ (case when nvl(d.payment_order,0)=0 then d.premia_val else d.insurance_amount_val end * (case when lower(d.currency)='rur' then 1/r.rate else 1 end))                 --* (case when d.bank='MKX' then 0 else 1 end)
                                  /
-                        /* 2 */ sum( (d.premia_val * (case when p.coupon=1 then round(nvl(d.coupon_profit/100,0)/p.coupon_rate,4)
+                        /* 2 */ sum( (case when nvl(d.payment_order,0)=0 then d.premia_val else d.insurance_amount_val end  * (case when p.coupon=1 then round(nvl(d.coupon_profit/100,0)/p.coupon_rate,4)
                                                 else nvl(d.particion_coef,0)/100
                                                 end)  --КУ
                                           * (case when lower(d.currency)='rur' then 1/r.rate else 1 end)) --курс валюты
@@ -91,7 +91,7 @@ from
                      ,  -- Израсходованный номинал в валюте
                         -- ? Переделать соотв расчет для памятки ?
                         -- ? Убрать округление 4 ?
-                         (d.premia_val * (case when p.coupon =1 then round(nvl(d.coupon_profit/100,0)/p.coupon_rate,4)
+                         (case when nvl(d.payment_order,0)=0 then d.premia_val else d.insurance_amount_val end  * (case when p.coupon =1 then round(nvl(d.coupon_profit/100,0)/p.coupon_rate,4)
                                                 else nvl(d.particion_coef,0)/100
                                                 end)
                                           * (case when lower(d.currency)='rur' then 1/r.rate else 1 end))  NOMINAL
