@@ -2,7 +2,7 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from collections import OrderedDict
-import utils
+from utils import compile_sql,execute_sql
 import configparser
 import os
 
