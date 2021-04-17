@@ -2,64 +2,19 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from collections import OrderedDict
-import cx_Oracle
+from utils import compile_sql,execute_sql
 import configparser
+import os
 
 config = configparser.ConfigParser()
-config.read('snake.ini')
+folder = os.path.abspath(os.path.dirname(__file__))
+folder+='/'
+config.read(folder + "snake.ini")
 oracle_login = config['DEFAULT']['login']
 oracle_password = config['DEFAULT']['password']
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-
-
-# функция для привязки названий столбцов к их номерам
-def fields(cursor):
-    """ Given a DB API 2.0 cursor object that has been executed, returns
-    a dictionary that maps each field name to a column index; 0 and up. """
-    results = OrderedDict()
-    column = 0
-    for d in cursor.description:
-        results[d[0]] = column
-        column = column + 1
-    return results
-
-
-# функция для сборки запроса
-def compile_sql(sql_template, param_dict=None):
-    with open(sql_template, 'r') as fd:
-        sql_query = fd.read()
-    if param_dict == None:
-        valid_sql_query = sql_query
-    else:
-        valid_sql_query = sql_query.format(**param_dict)
-    return valid_sql_query
-
-
-# функция для подстановки списка параметров в шаблон запроса, установка соединения, выполнение запроса
-def execute_sql(*valid_sql_queries):
-    # создаем соединение
-    dsn_tns = cx_Oracle.makedsn('172.20.2.36', '1521', service_name='mlife2')
-    conn = cx_Oracle.connect(user=oracle_login, password=oracle_password, dsn=dsn_tns, encoding="UTF-8",
-                             nencoding="UTF-8")
-    c = conn.cursor()
-    # отправляем SQL запрос
-    rs = []
-    for query in valid_sql_queries:
-        c.execute(query)
-        # обрабатываем SQL ответ
-        f = fields(c)
-        rows = c.fetchall()
-        rs.append(
-            {
-                'field_dict': f,
-                'rows': rows
-            }
-        )
-    c.close()
-    conn.close()
-    return rs[0] if len(rs)==1 else rs
 
 
 # функция для выгрузки инфы по переданным стратегиям и датам в виде таблицы
@@ -126,6 +81,7 @@ def get_pool_details(param_dict):
             s = s + 'Сумма возмещения (руб.): ' + str(eib_table[k][f3['SETTLE_RUR']]) + '<p/>'
             s = s + 'Сумма ДИД по нерасторгнутым (руб.): ' + str(eib_table[k][f3['EIB_NONLAPSE']]) + '<p/>'
             s = s + 'Сумма ДИД по заявленным убыткам (руб.): ' + str(eib_table[k][f3['BONUS_CLAIMED']]) + '<p/>'
+            s = s + 'Курсовая разница: ' + str(eib_table[k][f3['K']]) + '<p/>'
         s = s + '</div>'
         # собираем блок с активами по пулу
         d = '<div class="opt_column2"><h2>Инфа по активам:  </h2><p/>'
@@ -159,8 +115,7 @@ def apriori():
     # переменные с веб-формы
     mode = request.args.get('mode')  # формат вывода информации
     status = request.args.get('status')  # выгрузка с лапсами или без
-    with open('default_pool_list.sql', 'r') as fd:
-        valid_sql_query = fd.read()
+    valid_sql_query = compile_sql('default_pool_list.sql')
     result_table = execute_sql(valid_sql_query)
     # записываем результаты запроса в переменные
     strat_list = []
@@ -239,5 +194,5 @@ def root():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=86, debug=True)
-    #app.run()
+    #app.run(host='0.0.0.0', port=82, debug=True)
+    app.run()
