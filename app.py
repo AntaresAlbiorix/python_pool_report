@@ -2,9 +2,17 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from collections import OrderedDict
-from .utils import compile_sql,execute_sql
+
+
 import configparser
 import os
+import sys
+
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+
+from .utils import compile_sql,execute_sql
 
 config = configparser.ConfigParser()
 folder = os.path.abspath(os.path.dirname(__file__))
