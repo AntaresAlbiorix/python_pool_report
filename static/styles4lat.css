@@ -129,7 +129,8 @@
     		}
    
     tr:hover {
-    			background-color: #d179ab;
+    			/*background-color: #d179ab;*/
+    			background-color: #ce7eac82;
     		}
     		
 	tr.heads{

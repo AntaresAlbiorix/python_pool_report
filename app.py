@@ -29,7 +29,8 @@ def get_pool_table(param_dict):
     for row in result_table['rows']:
         s = s + '<tr>'
         for x in row:
-            s = s + '<td>' + str(x) + '</td>'
+            deficit_marker = ' style="color: #e91652;" ' if (str(x)[0] == '-') else ''
+            s += '<td' + deficit_marker + '>' + str(x) + '</td>'
     s = s + '</tr>'
     s = s + '</table>'
     return s

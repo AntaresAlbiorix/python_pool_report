@@ -1,5 +1,14 @@
 from collections import OrderedDict
 import cx_Oracle
+import configparser
+import os
+
+config = configparser.ConfigParser()
+folder = os.path.abspath(os.path.dirname(__file__))
+folder+='/'
+config.read(folder + "snake.ini")
+oracle_login = config['DEFAULT']['login']
+oracle_password = config['DEFAULT']['password']
 
 
 # функция для привязки названий столбцов к их номерам

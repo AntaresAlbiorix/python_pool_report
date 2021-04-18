@@ -8,28 +8,28 @@ select  --*
      , to_char(q.date_option)   								"Дата опциона"
      , q.rate													"Курс USD"
      , to_char(round(q.AVG_KU,4)*100 ) 					    "Средний КУ"
-     , to_char(q.premia_rur, '999,999,990.99')                "Брутто-премия (руб.)"
-	 , to_char(q.nominal, '999,999,990.99')					"Номинал по пулу"
-     , to_char(p.face_value , '999,999,990.99')				"Купленный номинал"
-     , to_char(p.face_value-q.nominal, '999,999,990.99')  		"Остаток от текущ. пула"                                        --остаток по текущему пулу
+     , to_char(q.premia_rur, 'FM999,999,990.00')                "Брутто-премия (руб.)"
+	 , to_char(q.nominal, 'FM999,999,990.00')					"Номинал по пулу"
+     , to_char(p.face_value , 'FM999,999,990.00')				"Купленный номинал"
+     , to_char(p.face_value-q.nominal, 'FM999,999,990.00')  		"Остаток от текущ. пула"                                        --остаток по текущему пулу
      , to_char(
 			   case when q.is_coupon =1 then 0
 										else round(p.face_value_acc-p.face_value+q.nominal-q.nominal_acc,2)
 								   --   else nvl(LAG(round(p.face_value_acc-q.nominal_acc,2)) OVER(partition by p.strategy_id order by p.hist_stage) ,0)
 			   end
-		, '999,999,990.99')										"Хвост"                              					      	--хвост от предыдущего пула
+		, '999,999,990.00')										"Хвост"                              					      	--хвост от предыдущего пула
 
      , to_char(
 				case when q.is_coupon =1 then (p.face_value-q.nominal)
 												else (p.face_value_acc-q.nominal_acc)
 				end
-		, '999,999,990.99')										"Итого остаток"                    								--остаток номинала с учетом хвоста
+		, 'FM999,999,990.00')										"Итого остаток"                    								--остаток номинала с учетом хвоста
 
      , to_char(  case when q.is_coupon =1 then (p.face_value-q.nominal)
                                         else (p.face_value_acc-q.nominal_acc)
                 end
               /  q.avg_ku*q.rate
-        , '999,999,990.99')
+        , 'FM999,999,990.00')
 																"Лимит продаж (руб.)"                       							-- лимит продаж (руб)
 
 from
