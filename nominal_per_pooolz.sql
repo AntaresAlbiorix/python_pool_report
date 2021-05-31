@@ -126,7 +126,10 @@ from
                                , p.hist_stage
                                , sr.coupon
 							   , sr.strategy_name
-                               , case when sr.coupon=1 then nvl( l.coupon_rate,  LAG (l.coupon_rate) OVER (partition by p.strategy_id order by p.hist_stage))
+                               , case when sr.coupon=1 then nvl(
+                                                                nvl( l.coupon_rate,  LAG (l.coupon_rate) OVER (partition by p.strategy_id order by p.hist_stage))--если опцион не куплен, то берется купонная ставка по предыдущему опц в рамках той же стратегии.
+                                                            ,   LAG (l.coupon_rate) OVER (partition by sr.coupon     order by p.strategy_id)                     --если стратегия новая, то берется ставка по последней предыдущей купонной стратегии.
+                                                            )
                                     else -1
                                  end as coupon_rate
                           from life2makc.pool_list p

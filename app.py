@@ -47,7 +47,7 @@ def get_pool_table(param_dict):
 # функция для выгрузки инфы по переданным стратегиям и датам в виде "карточки пула"
 def get_pool_details(param_dict):
     valid_nominal_per_pooolz = compile_sql('nominal_per_pooolz.sql', param_dict)
-    valid_opt_info_per_poolz = compile_sql('opt_info_per_poolz.sql', param_dict)
+    valid_opt_info_per_poolz = compile_sql('opt_info_per_poolz.sql', param_dict) # TODO: check the valuation_date < expiration_calc_date
     valid_eib_paid           = compile_sql('eib_paid.sql'          , param_dict)
     # выполняем все запросы сразу
     result_table=execute_sql(valid_nominal_per_pooolz, valid_opt_info_per_poolz, valid_eib_paid)
