@@ -114,21 +114,22 @@
 						
 						<input type="button"   name="Check_All_strats" value="Снять все" class="butt" onClick="master_check('strat[]')" id="strat[]"> </br>			
 						<input type="checkbox" name="strat[]" class="custom-checkbox" value="1"  checked >   Глобальная экономика 3 года		  <Br/>		
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="2"  checked >   Лидеры фармацевтики                 <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="3"  checked >   Купонный доход                      <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="4"  checked >   Глобальная экономика 5 лет          <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="5"  checked >   Глобальная экономика 3 года - 2     <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="6"  checked >   Глобальная экономика 5 лет  - 2     <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="7"  checked >   Лидеры фармацевтики  - 2            <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="8"  checked >   Купонный доход - 2                  <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="9"  checked >   Сбалансированный портфель 3 года    <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="10" checked >   Сбалансированный портфель 5 лет     <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="11" checked >   Сбалансированный портфель 3.5 лет   <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="12" checked >   Купонный доход - 3                  <Br/>
-				 		<input type="checkbox" name="strat[]" class="custom-checkbox" value="13" checked >   Смарт Капитал		                 <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="14" checked >   Купонный доход - 4 (Фора) 		     <Br/>
-						<input type="checkbox" name="strat[]" class="custom-checkbox" value="15" checked >   Информационные технологии           <Br/>
-						</div>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="2"  checked >   Лидеры фармацевтики                  <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="3"  checked >   Купонный доход                       <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="4"  checked >   Глобальная экономика 5 лет           <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="5"  checked >   Глобальная экономика 3 года - 2      <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="6"  checked >   Глобальная экономика 5 лет  - 2      <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="7"  checked >   Лидеры фармацевтики  - 2             <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="8"  checked >   Купонный доход - 2                   <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="9"  checked >   Сбалансированный портфель 3 года     <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="10" checked >   Сбалансированный портфель 5 лет      <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="11" checked >   Сбалансированный портфель 3 года - 2 <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="12" checked >   Купонный доход - 3                   <Br/>
+				 		<input type="checkbox" name="strat[]" class="custom-checkbox" value="13" checked >   Смарт Капитал		                  <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="14" checked >   Купонный доход - 4 (Фора) 		      <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="15" checked >   Информационные технологии            <Br/>
+						<input type="checkbox" name="strat[]" class="custom-checkbox" value="16" checked >   Купонный доход - 5                   <Br/>
+                </div>
 			
 										
 				<div id="upcenter" 		class="row">  
@@ -222,7 +223,7 @@ else{
      tab_text = tab_text + "</table>";
      tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
      tab_text = tab_text.replace(/<img[^>]*>/gi, ""); // remove if u want images in your table
-     tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+     tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // removes input params
 	 tab_text = tab_text.replace(/-/g, "0" );
 	 tab_text = tab_text.replace(/,/g, "" );
 	 tab_text = tab_text.replace(/\u0028/g, "-" ); 
@@ -259,7 +260,7 @@ else{
             , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
           return function(table, name) {
             if (!table.nodeType) table = document.getElementById(table)
-            var ctx = {worksheet: 'Worksheet', table: table.innerHTML.replace(/,/g, "" )}
+            var ctx = {worksheet: 'Worksheet', table: table.innerHTML.replace(/-/g, "0" ).replace(/,/g, "" ).replace(/\u0028/g, "-" ).replace(/\u0029/g, "" )}
             window.location.href = uri + base64(format(template, ctx))
           }
         })()
