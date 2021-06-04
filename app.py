@@ -103,12 +103,15 @@ def get_pool_details(param_dict):
                 # d = d + 'Номер пула: '  + str(k) + '<p/>'
                 d = d + '<h4>ISIN: ' + str(asset[f2['ISIN']]) + '</h4><p/>'
                 # d = d + 'Дата инвестирования: '  + str(asset[f2['INVEST_START_DATE']]) + '<p/>'
+                d = d + 'Дата страйка: ' + str(asset[f2['INVEST_START_DATE']]) + '<p/>'
+                d = d + 'Дата экспирации: ' + str(asset[f2['INVEST_END_DATE']]) + '<p/>'
                 d = d + 'Дата покупки: ' + str(asset[f2['TRANSACTION_DATE']]) + '<p/>'
                 d = d + 'Цена покупки: ' + str(asset[f2['OPTION_PRICE']]) + '<p/>'
+                if str(asset[f2['CALC_DATE']]) != 'None':
+                    d = d + 'Доходность опциона по состоянию на '+str(asset[f2['CALC_DATE']])+' : ' + str(asset[f2['BS_VALUE']]) + '<p/>'
                 d = d + 'Купленный номинал (USD): ' + str(asset[f2['FV_USD']]) + '<p/>'
-                d = d + 'Дата последней переоценки: ' + str(asset[f2['CALC_DATE']]) + '<p/>'
-                d = d + 'Доходность опциона: ' + str(asset[f2['BS_VALUE']]) + '<p/>'
-                d = d + 'Дата экспирации: ' + str(asset[f2['INVEST_END_DATE']]) + '<p/>'
+                #d = d + 'Дата последней переоценки: ' + str(asset[f2['CALC_DATE']]) + '<p/>'
+                #d = d + 'Доходность опциона: ' + str(asset[f2['BS_VALUE']]) + '<p/>'
                 if str(asset[f2[
                     'STATUS']]) == '5':  # размер выплаты от эмитента выводим только по истекшим опционам (офк)
                     d = d + 'Сумма возмещения (USD): ' + str(asset[f2['SUM_CUR']]) + '<p/>'
